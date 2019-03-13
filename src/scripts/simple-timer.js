@@ -28,7 +28,7 @@ class SimpleTimer {
       throw new TypeError('minutes must be a number')
     }
     this._state.minutes = Math.floor(value)
-    this.dispatch('minutes-change')
+    this.dispatch('minutes-change', this._state.minutes)
   }
   get seconds() {
     return this._state.seconds
@@ -38,7 +38,7 @@ class SimpleTimer {
       throw new TypeError('seconds must be a number')
     }
     this._state.seconds = Math.floor(value)
-    this.dispatch('seconds-change')
+    this.dispatch('seconds-change', this._state.seconds)
   }
 }
 
