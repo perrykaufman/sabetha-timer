@@ -1,0 +1,25 @@
+{
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.1",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.1"
+  },
+  "name": "sabatha-timer",
+  "version": "1.0.0",
+  "description": "A timer with call outs for canons in the Guild Wars 2 Sabetha raid encounter.",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server --env.development"
+  },
+  "private": true,
+  "author": "Perry Kaufman",
+  "license": "MIT"
+}
