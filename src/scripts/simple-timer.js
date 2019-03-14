@@ -1,5 +1,4 @@
 import EventMixin from './event-mixin.js'
-import { on } from 'cluster';
 
 const INTERVAL = 1000
 
