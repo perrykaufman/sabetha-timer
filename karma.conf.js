@@ -1,5 +1,7 @@
 const path = require('path')
 
+const webpackConfig = require('./webpack.config.js')({development: true, test: true})
+
 module.exports = (config) => {
   config.set({
     browsers: ['Firefox'],
@@ -12,28 +14,6 @@ module.exports = (config) => {
       'test/*.test.js': ['webpack', 'sourcemap'],
       'test/**/*.test.js': ['webpack', 'sourcemap']
     },
-    webpack: {
-      devtool: 'inline-source-map',
-      mode: 'development',
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: {
-              loader: 'babel-loader',
-              options: {
-                presets: ['@babel/preset-env']
-              }
-            }
-          }
-        ]
-      },
-      resolve: {
-        alias: {
-          '@scripts': path.resolve(__dirname, './src/scripts')
-        }
-      }
-    }
+    webpack: webpackConfig
   })
 }

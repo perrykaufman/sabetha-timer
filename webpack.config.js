@@ -1,11 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {resolve} = require('path')
+const path = require('path')
 
 const config = {
   mode: 'production',
   entry: './src/index.js',
   output: {
-    path: resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
   module: {
@@ -35,17 +35,33 @@ const config = {
       template: './src/index.html',
       inject: 'body'
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@scripts': path.resolve(__dirname, 'src/scripts'),
+      '@styles': path.resolve(__dirname, 'src/styles'),
+      '@test': path.resolve(__dirname, 'test'),
+    }
+  }
+}
+
+const devConfig = {
+  mode: 'development',
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: false,
+    port: 7700
+  }
 }
 
 module.exports = env => {
   if (env.development) {
-    config.mode = 'development'
-    config.devtool = 'inline-source-map'
-    config.devServer = {
-      contentBase: false,
-      port: 7700
-    }
+    Object.assign(config, devConfig)
+  }
+  if (env.test) {
+    delete config.entry
+    delete config.output
   }
   
   return config
