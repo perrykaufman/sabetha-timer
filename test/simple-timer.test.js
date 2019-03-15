@@ -122,6 +122,16 @@ describe('simple-timer', function() {
       timer.start()
       expect(started).toBe(true)
     })
+
+    it ('dispatchs \'start\' event with {minutes, seconds} parameter', function() {
+      let startTime
+      timer.on('start', (time) => {
+        startTime = time
+      })
+      timer.start()
+      expect(startTime.minutes).toBe(minutes)
+      expect(startTime.seconds).toBe(seconds)
+    })
   
     it('dispatchs \'tick\' event each second', function() {
       const expectedTicks = 3
@@ -130,6 +140,18 @@ describe('simple-timer', function() {
       timer.start()
       jasmine.clock().tick(expectedTicks * INTERVAL + 1)
       expect(ticks).toBe(expectedTicks)
+    })
+
+    it('dispatchs \'tick\' event with {minutes, seconds} parameter', function() {
+      const ticks = 3
+      let tickTime
+      timer.on('tick', (time) => {
+        tickTime = time
+      })
+      timer.start()
+      jasmine.clock().tick(ticks * INTERVAL + 1)
+      expect(tickTime.minutes).toBe(minutes)
+      expect(tickTime.seconds).toBe(seconds - ticks)
     })
     
     it('dispatchs \'stop\' event when time reachs 0:00', function() {
