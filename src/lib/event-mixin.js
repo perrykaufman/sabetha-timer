@@ -16,7 +16,7 @@ const eventMixin = {
       handlers.splice(index, 1)
     })
   },
-  dispatch(event, ...args) {
+  _dispatch(event, ...args) {
     const handlers = this._handlers && this._handlers[event]
     if (!handlers) return
     handlers.forEach((func) => {
