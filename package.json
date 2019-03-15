@@ -32,5 +32,8 @@
     "url": "https://github.com/perrykaufman/sabetha-timer"
   },
   "author": "Perry Kaufman",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5"
+  }
 }
