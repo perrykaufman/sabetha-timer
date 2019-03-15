@@ -37,13 +37,6 @@ describe('simple-timer', function() {
     expect(timer.isActive).toBe(false)
   })
 
-  it('has event mixin', function() {
-    timer = new SimpleTimer()
-    expect(timer.dispatch).toBeTruthy()
-    expect(timer.on).toBeTruthy()
-    expect(timer.off).toBeTruthy()
-  })
-
   //using start() on a timer that is already active will not break it
   it('can be started if active', function() {
     timer = new SimpleTimer()
@@ -59,6 +52,47 @@ describe('simple-timer', function() {
     timer = new SimpleTimer()
     expect(() => timer.stop()).not.toThrow()
     expect(timer.isActive).toBe(false)
+  })
+
+  it('has event mixin', function() {
+    timer = new SimpleTimer()
+    expect(timer.dispatch).toBeTruthy()
+    expect(timer.on).toBeTruthy()
+    expect(timer.off).toBeTruthy()
+  })
+
+  describe('with event mixin', function() {
+    beforeEach(function() {
+      jasmine.clock().install()
+      timer = new SimpleTimer({minutes, seconds})
+    })
+    afterEach(function() {
+      jasmine.clock().uninstall()
+    })
+
+    it('dispatchs \'start\' event', function() {
+      let started = false
+      timer.on('start', () => started = true)
+      timer.start()
+      expect(started).toBe(true)
+    })
+  
+    it('dispatchs \'tick\' event each second', function() {
+      const expectedTicks = 3
+      let ticks = 0
+      timer.on('tick', () => ticks++)
+      timer.start()
+      jasmine.clock().tick(expectedTicks * INTERVAL + 1)
+      expect(ticks).toBe(expectedTicks)
+    })
+    
+    it('dispatchs \'stop\' event', function() {
+      let stopped = false
+      timer.on('stop', () => stopped = true)
+      timer.start()
+      jasmine.clock().tick(91 * INTERVAL + 1)
+      expect(stopped).toBe(true)
+    })
   })
 
   describe('timer ticks', function() {
