@@ -1,5 +1,5 @@
-import EventMixin from './event-mixin.js'
-import SimpleTimer from './simple-timer.js'
+import EventMixin from '@lib/event-mixin.js'
+import SimpleTimer from '@lib/simple-timer.js'
 
 const CANON_Enum = {
   SOUTH: 1,

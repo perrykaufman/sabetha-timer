@@ -1,4 +1,4 @@
-import EventMixin from './event-mixin.js'
+import EventMixin from '@lib/event-mixin.js'
 
 const INTERVAL = 1000
 

@@ -1,4 +1,4 @@
-import SimpleTimer from '@scripts/simple-timer.js'
+import SimpleTimer from '@lib/simple-timer.js'
 
 describe('simple-timer', function() {
   /* changing these values will break the tests */
