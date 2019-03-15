@@ -20,7 +20,7 @@ const eventMixin = {
     const handlers = this._handlers && this._handlers[event]
     if (!handlers) return
     handlers.forEach((func) => {
-      func.apply(args)
+      func.apply(null, args)
     })
   }
 }
