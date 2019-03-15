@@ -52,15 +52,15 @@ class SimpleTimer {
     return this._state.startTime
   }
   set _startTime({minutes = 0, seconds = 0} = {}) {
-    if (typeof minutes != 'number') {
-      throw new TypeError('minutes must be a number')
+    if (typeof minutes !== 'number' || minutes < 0) {
+      throw new TypeError('minutes must be a positive number')
     }
-    if (typeof seconds != 'number') {
-      throw new TypeError('seconds must be a number')
+    if (typeof seconds !== 'number' || seconds < 0) {
+      throw new TypeError('seconds must be a positive number')
     }
     this._state.startTime = {
-      minutes: minutes > 0 ? Math.floor(minutes + (seconds / 60)) : 0,
-      seconds: seconds > 0 ? Math.floor(seconds % 60) : 0
+      minutes: Math.floor(minutes + (seconds / 60)),
+      seconds: Math.floor(seconds % 60)
     }
   }
   _tick() {
