@@ -54,6 +54,19 @@ describe('simple-timer', function() {
     expect(timer.isActive).toBe(false)
   })
 
+  it('can be reset if active', function() {
+    timer = new SimpleTimer({minutes, seconds})
+    timer.start()
+    expect(() => timer.reset()).not.toThrow()
+    expect(timer.isActive).toBe(false)
+  })
+
+  it('can be reset if inactive', function() {
+    timer = new SimpleTimer({minutes, seconds})
+    expect(() => timer.reset()).not.toThrow()
+    expect(timer.isActive).toBe(false)
+  })
+
   it('has event mixin', function() {
     timer = new SimpleTimer({minutes, seconds})
     expect(timer.dispatch).toBeTruthy()
@@ -70,7 +83,7 @@ describe('simple-timer', function() {
       jasmine.clock().uninstall()
     })
 
-    it('dispatchs \'start\' event', function() {
+    it('dispatchs \'start\' event when started', function() {
       let started = false
       timer.on('start', () => started = true)
       timer.start()
@@ -86,12 +99,28 @@ describe('simple-timer', function() {
       expect(ticks).toBe(expectedTicks)
     })
     
-    it('dispatchs \'stop\' event', function() {
+    it('dispatchs \'stop\' event when time reachs 0:00', function() {
       let stopped = false
       timer.on('stop', () => stopped = true)
       timer.start()
       jasmine.clock().tick(91 * INTERVAL + 1)
       expect(stopped).toBe(true)
+    })
+
+    it('dispatchs \'stop\' event when stopped', function() {
+      let stopped = false
+      timer.on('stop', () => stopped = true)
+      timer.start()
+      timer.stop()
+      expect(stopped).toBe(true)
+    })
+
+    it('dispatchs \'stop\' event when reset', function() {
+      let reset = false
+      timer.on('stop', () => reset = true)
+      timer.start()
+      timer.reset()
+      expect(reset).toBe(true)
     })
   })
 
