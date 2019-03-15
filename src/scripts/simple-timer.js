@@ -59,20 +59,28 @@ class SimpleTimer {
       throw new TypeError('seconds must be a number')
     }
     this._state.startTime = {
-      minutes: minutes > 0 ? Math.floor(minutes) : 0,
-      seconds: seconds > 0 ? Math.floor(seconds) : 0
+      minutes: minutes > 0 ? Math.floor(minutes + (seconds / 60)) : 0,
+      seconds: seconds > 0 ? Math.floor(seconds % 60) : 0
     }
   }
   _tick() {
-    if (this._minutes == 0 && this._seconds == 0) {
-      this.stop()
-    } else if (this._seconds == 0) {
-      this._minutes--
-      this._seconds = 59
-    } else {
-      this._seconds--
+    let minutes = this._minutes
+    let seconds = this._seconds
+    
+    seconds--
+    
+    if (seconds < 0) {
+      seconds = 59
+      minutes--
     }
-    this.dispatch('tick', {minutes: this._minutes, seconds: this._seconds})
+    
+    this._minutes = minutes
+    this._seconds = seconds
+    this.dispatch('tick', {minutes, seconds})
+
+    if (minutes == 0 && seconds == 0) {
+      this.stop()
+    }
   }
 }
 

@@ -166,7 +166,7 @@ describe('simple-timer', function() {
       jasmine.clock().tick(90 * INTERVAL + 1)
       expect(timer.minutes).toBe(0)
       expect(timer.seconds).toBe(0)
-      expect(timer.isActive).toBe(true)
+      expect(timer.isActive).toBe(false)
     })
 
     it('1 minute 31 seconds to 0', function() {
