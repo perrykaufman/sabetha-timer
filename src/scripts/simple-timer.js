@@ -20,6 +20,7 @@ class SimpleTimer {
     this.dispatch('tick', {minutes: this._minutes, seconds: this._seconds})
   }
   start(startTime) {
+    if (this.isActive) return
     if (startTime) this._startTime = startTime
     this._minutes = this._startTime.minutes
     this._seconds = this._startTime.seconds
@@ -33,9 +34,8 @@ class SimpleTimer {
     }
   }
   stop() {
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    if (!this.isActive) return
+    clearInterval(this._interval)
     this._interval = null
     this.dispatch('stop')
   }
