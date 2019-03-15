@@ -40,7 +40,7 @@ class SimpleTimer {
     return this._state.minutes
   }
   set _minutes(value) {
-    this._state.minutes = Math.floor(value)
+    this._state.minutes = value
   }
   get _seconds() {
     return this._state.seconds
