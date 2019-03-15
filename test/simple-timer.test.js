@@ -12,29 +12,62 @@ describe('simple-timer', function() {
     timer = undefined
   })
 
-  it('create timer with minutes', function() {
+  it('can be initialized with minutes', function() {
     timer = new SimpleTimer({minutes})
     expect(timer.minutes).toBe(minutes)
     expect(timer.seconds).toBe(0)
     expect(timer.isActive).toBe(false)
   })
-  it('create timer with seconds', function() {
+
+  it('can be initialized with seconds', function() {
     timer = new SimpleTimer({seconds})
     expect(timer.minutes).toBe(0)
     expect(timer.seconds).toBe(seconds)
     expect(timer.isActive).toBe(false)
   })
-  it('create timer with minutes and seconds', function() {
+
+  it('can be initialized with minutes and seconds', function() {
     timer = new SimpleTimer({minutes, seconds})
     expect(timer.minutes).toBe(minutes)
     expect(timer.seconds).toBe(seconds)
     expect(timer.isActive).toBe(false)
   })
-  it('create timer with initial values', function() {
+
+  it('can be initialized with initial values', function() {
     timer = new SimpleTimer()
     expect(timer.minutes).toBe(0)
     expect(timer.seconds).toBe(0)
     expect(timer.isActive).toBe(false)
+  })
+
+  it('can be initialized with 90 seconds', function() {
+    timer = new SimpleTimer({seconds: 90})
+    expect(timer.minutes).toBe(1)
+    expect(timer.seconds).toBe(30)
+    expect(timer.isActive).toBe(false)
+  })
+
+  it('can be initialized with 1 minute and 90 seconds', function() {
+    timer = new SimpleTimer({minutes: 1, seconds: 90})
+    expect(timer.minutes).toBe(2)
+    expect(timer.seconds).toBe(30)
+    expect(timer.isActive).toBe(false)
+  })
+
+  it('throws an error when initialized with negative minutes value', function() {
+    expect(() => new SimpleTimer({minutes: -1})).toThrowError(TypeError)
+  })
+
+  it('throws an error when initialized with negative seconds value', function() {
+    expect(() => new SimpleTimer({seconds: -1})).toThrowError(TypeError)
+  })
+
+  it('throws an error when initialized with non-number minutes value', function() {
+    expect(() => new SimpleTimer({minutes: "str"})).toThrowError(TypeError)
+  })
+
+  it('throws an error when initialized with non-number seconds value', function() {
+    expect(() => new SimpleTimer({seconds: "str"})).toThrowError(TypeError)
   })
 
   //using start() on a timer that is already active will not break it
