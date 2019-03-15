@@ -15,6 +15,8 @@ const CANON_ENUM = {
   },
 }
 
+const CANON_START = {minutes: 8, seconds: 25 }
+
 const CANON_ORDER = [1, 2, 3, 4, 1, 3, 2, 4]
 
 class SabethaTimer {
@@ -54,9 +56,11 @@ class SabethaTimer {
   _countdownPhase() {
     this._timer = new SimpleTimer({seconds: 5})
     
+    const announce = SabethaTimer._makeCountAnnouncer()
+
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
-      this._announceCount(time)
+      announce(time)
     })
 
     const promise = new Promise(resolve => {
@@ -73,9 +77,11 @@ class SabethaTimer {
   _canonsPhase() {
     this._timer = new SimpleTimer({minutes: 9, seconds: 2})
 
+    const announce = SabethaTimer._makeCanonAnnouncer()
+
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
-      this._announceCanon(time)
+      announce(time)
     })
 
     const promise = new Promise(resolve => {
@@ -90,13 +96,22 @@ class SabethaTimer {
 
     return promise
   }
-  _announceCanon({minutes, seconds}) {
-    //announce canons here
-    console.log(`${minutes}:${seconds}`)
+  static _makeCanonAnnouncer() {
+    return ({minutes, seconds}) => {
+      //TODO: announce canons
+      console.log(`${minutes}:${seconds}`)
+    }
   }
-  _announceCount({seconds}) {
-    //announce countdown here
-    console.log(`${seconds}s`)
+  static _makeCountAnnouncer() {
+    return ({seconds}) => {
+      if (seconds == 0) {
+        //announce go
+        console.log('go')
+      } else {
+        //announce seconds
+        console.log(String(seconds))
+      }
+    }
   }
 }
 
