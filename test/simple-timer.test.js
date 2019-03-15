@@ -8,6 +8,7 @@ describe('simple-timer', function() {
   let timer
 
   afterEach(function() {
+    if (timer instanceof SimpleTimer) timer.stop()
     timer = undefined
   })
 
@@ -43,6 +44,23 @@ describe('simple-timer', function() {
     expect(timer.off).toBeTruthy()
   })
 
+  //using start() on a timer that is already active will not break it
+  it('can be started if active', function() {
+    timer = new SimpleTimer()
+    timer.start()
+    const interval1 = timer._interval
+    expect(() => timer.start()).not.toThrow()
+    const interval2 = timer._interval
+    expect(interval1).toBe(interval2)
+    expect(timer.isActive).toBe(true)
+  })
+
+  it('can be stopped if inactive', function() {
+    timer = new SimpleTimer()
+    expect(() => timer.stop()).not.toThrow()
+    expect(timer.isActive).toBe(false)
+  })
+
   describe('timer ticks', function() {
     beforeEach(function() {
       jasmine.clock().install()
@@ -51,7 +69,6 @@ describe('simple-timer', function() {
     })
     afterEach(function() {
       jasmine.clock().uninstall()
-      timer.stop()
     })
     
     it('0 seconds', function() {
