@@ -69,7 +69,7 @@ describe('simple-timer', function() {
 
   it('has event mixin', function() {
     timer = new SimpleTimer({minutes, seconds})
-    expect(timer.dispatch).toBeTruthy()
+    expect(timer._dispatch).toBeTruthy()
     expect(timer.on).toBeTruthy()
     expect(timer.off).toBeTruthy()
   })
