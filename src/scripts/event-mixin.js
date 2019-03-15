@@ -3,7 +3,7 @@ const eventMixin = {
     if (!this._handlers) {
       this._handlers = {}
     }
-    if (this.handlers[event]) {
+    if (!this._handlers[event]) {
       this._handlers[event] = []
     }
     this._handlers[event].push(handler)
