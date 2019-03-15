@@ -39,7 +39,7 @@ describe('simple-timer', function() {
 
   //using start() on a timer that is already active will not break it
   it('can be started if active', function() {
-    timer = new SimpleTimer()
+    timer = new SimpleTimer({minutes, seconds})
     timer.start()
     const interval1 = timer._interval
     expect(() => timer.start()).not.toThrow()
@@ -49,13 +49,13 @@ describe('simple-timer', function() {
   })
 
   it('can be stopped if inactive', function() {
-    timer = new SimpleTimer()
+    timer = new SimpleTimer({minutes, seconds})
     expect(() => timer.stop()).not.toThrow()
     expect(timer.isActive).toBe(false)
   })
 
   it('has event mixin', function() {
-    timer = new SimpleTimer()
+    timer = new SimpleTimer({minutes, seconds})
     expect(timer.dispatch).toBeTruthy()
     expect(timer.on).toBeTruthy()
     expect(timer.off).toBeTruthy()
@@ -142,8 +142,8 @@ describe('simple-timer', function() {
 
     it('1 minute 31 seconds to 0', function() {
       jasmine.clock().tick(91 * INTERVAL + 1)
-      expect(timer.minutes).toBe(minutes)
-      expect(timer.seconds).toBe(seconds)
+      expect(timer.minutes).toBe(0)
+      expect(timer.seconds).toBe(0)
       expect(timer.isActive).toBe(false)
     })
   })

@@ -6,23 +6,17 @@ class SimpleTimer {
   constructor(startTime) {
     this._state = {}
     this._startTime = startTime
+    this.reset()
     this._interval = null
   }
-  _tick() {
-    if (this._minutes == 0 && this._seconds == 0) {
-      this.stop()
-    } else if (this._seconds == 0) {
-      this._minutes--
-      this._seconds = 59
-    } else {
-      this._seconds--
-    }
-    this.dispatch('tick', {minutes: this._minutes, seconds: this._seconds})
+  reset() {
+    if (this.isActive) this.stop()
+    this._minutes = this._startTime.minutes
+    this._seconds = this._startTime.seconds
   }
   start() {
     if (this.isActive) return
-    this._minutes = this._startTime.minutes
-    this._seconds = this._startTime.seconds
+    if (this.minutes == 0 && this.seconds == 0) return
     this._interval = setInterval(() => this._tick(), INTERVAL)
     this.dispatch('start')
   }
@@ -32,28 +26,30 @@ class SimpleTimer {
     this._interval = null
     this.dispatch('stop')
   }
+  get isActive() {
+    if (this._interval) return true
+    return false
+  }
   get minutes() {
-    return this.isActive ? this._minutes : this._startTime.minutes
+    return this._minutes
+  }
+  get seconds() {
+    return this._seconds
   }
   get _minutes() {
     return this._state.minutes
   }
   set _minutes(value) {
     this._state.minutes = Math.floor(value)
-    this.dispatch('minutes-change', this._state.minutes)
-  }
-  get seconds() {
-    return this.isActive ? this._seconds : this._startTime.seconds
   }
   get _seconds() {
     return this._state.seconds
   }
   set _seconds(value) {
-    this._state.seconds = Math.floor(value)
-    this.dispatch('seconds-change', this._state.seconds)
+    this._state.seconds = value
   }
   get _startTime() {
-    return Object.assign({}, this._state.startTime)
+    return this._state.startTime
   }
   set _startTime({minutes = 0, seconds = 0} = {}) {
     if (typeof minutes != 'number') {
@@ -67,9 +63,16 @@ class SimpleTimer {
       seconds: seconds > 0 ? Math.floor(seconds) : 0
     }
   }
-  get isActive() {
-    if (this._interval) return true
-    return false
+  _tick() {
+    if (this._minutes == 0 && this._seconds == 0) {
+      this.stop()
+    } else if (this._seconds == 0) {
+      this._minutes--
+      this._seconds = 59
+    } else {
+      this._seconds--
+    }
+    this.dispatch('tick', {minutes: this._minutes, seconds: this._seconds})
   }
 }
 
