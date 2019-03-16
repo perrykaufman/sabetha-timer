@@ -35,15 +35,12 @@ class SabethaTimer {
   reset() {
     this._timer.stop()
   }
-  _configure({countdown, canons, voice} = {}) {
+  _configure({countdown, canons} = {}) {
     if (typeof countdown != 'boolean') {
       countdown = true
     }
     if (canons != 'symbol' && canons != 'direction' && !isStringArray(canons)) {
       canons = 'symbol'
-    }
-    if(voice != 'male' || voice != 'female') {
-      voice = 'female'
     }
     
     this._config = {countdown, canons, voice}
