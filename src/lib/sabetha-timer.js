@@ -2,22 +2,17 @@ import EventMixin from '@lib/event-mixin.js'
 import {isStringArray} from '@lib/util.js'
 import SimpleTimer from '@lib/simple-timer.js'
 
-const CANON_ENUM = {
-  SOUTH: 1,
-  WEST: 2,
-  NORTH: 3,
-  EAST: 4,
-  properties: {
-    1: {direction: 'South', symbol: 'Arrow'},
-    2: {direction: 'West', symbol: 'Circle'},
-    3: {direction: 'North', symbol: 'Heart'},
-    4: {direction: 'East', symbol: 'Square'},
-  },
-}
+const Canons = new Object(null)
 
-const CANON_START = {minutes: 8, seconds: 25 }
-
-const CANON_ORDER = [1, 2, 3, 4, 1, 3, 2, 4]
+Canons.start = {minutes: 8, seconds: 25 }
+Canons.interval = 30
+Canons.order = [0, 1, 2, 3, 0, 2, 1, 3]
+Canons.alias = [
+  {direction: 'South', symbol: 'Arrow'},
+  {direction: 'West', symbol: 'Circle'},
+  {direction: 'North', symbol: 'Heart'},
+  {direction: 'East', symbol: 'Square'},
+]
 
 class SabethaTimer {
   constructor(toSpeech) {
@@ -97,9 +92,21 @@ class SabethaTimer {
     return promise
   }
   static _makeCanonAnnouncer() {
+    let canon = 0
+    let warnAt = Canons.start.seconds + 10
+    let throwAt = Canons.start.seconds
     return ({minutes, seconds}) => {
-      //TODO: announce canons
       console.log(`${minutes}:${seconds}`)
+      //announce canons
+      if (seconds == warnAt) {
+        console.log('warn ' + Canons.alias[Canons.order[canon]].direction)
+        warnAt = (warnAt + 30) % 60
+      }
+      if (seconds == throwAt) {
+        console.log('throw ' + Canons.alias[Canons.order[canon]].direction)
+        throwAt = (throwAt + 30) % 60
+        canon = (canon + 1) % Canons.order.length
+      }
     }
   }
   static _makeCountAnnouncer() {
