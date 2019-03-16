@@ -1,6 +1,8 @@
-import timer from '@lib/sabetha-timer'
+import SabethaTimer from '@lib/sabetha-timer.js'
+import SpeechSynthesisAdapter from '@lib/speech-synthesis-adapter.js'
 import style from '@styles/index.styl'
 
-const t = new timer((str) => console.log(str))
+const caller = new SpeechSynthesisAdapter()
+const timer = new SabethaTimer(caller)
 
-t.start()
+timer.start()
