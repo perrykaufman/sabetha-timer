@@ -103,11 +103,11 @@ class SabethaTimer {
       console.log(`${minutes}:${seconds}`)
       //announce canons
       if (seconds == warnAt) {
-        caller.call('warn ' + Canons.alias[Canons.order[canon]].direction)
+        caller.call(`${Canons.alias[Canons.order[canon]].direction} soon`)
         warnAt = (warnAt + 30) % 60
       }
       if (seconds == throwAt) {
-        caller.call('throw ' + Canons.alias[Canons.order[canon]].direction)
+        caller.call(`throw ${Canons.alias[Canons.order[canon]].direction}`)
         throwAt = (throwAt + 30) % 60
         canon = (canon + 1) % Canons.order.length
       }
