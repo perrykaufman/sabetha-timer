@@ -9,7 +9,7 @@ class SpeechSynthesisAdapter {
     this._voice = null
   }
   call(text) {
-    const utterance = new SpeechSynthesisUtterance('text')
+    const utterance = new SpeechSynthesisUtterance(text)
     if (this._voice) utterance.voice = this._voice
     speechSynthesis.speak(utterance)
   }
@@ -26,3 +26,5 @@ class SpeechSynthesisAdapter {
     this._voice = speechSynthesis.getVoices().find((el) => el.name === name)
   }
 }
+
+export default SpeechSynthesisAdapter
