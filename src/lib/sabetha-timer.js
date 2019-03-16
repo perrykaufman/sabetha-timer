@@ -15,8 +15,8 @@ Canons.alias = [
 ]
 
 class SabethaTimer {
-  constructor(toSpeech) {
-    this._toSpeech = toSpeech
+  constructor(caller) {
+    this._caller = caller
     this._config = {}
     this._timer = null
   }
@@ -43,12 +43,12 @@ class SabethaTimer {
       canons = 'symbol'
     }
     
-    this._config = {countdown, canons, voice}
+    this._config = {countdown, canons}
   }
   _countdownPhase() {
     this._timer = new SimpleTimer({seconds: 5})
     
-    const announce = SabethaTimer._makeCountAnnouncer()
+    const announce = SabethaTimer._makeCountAnnouncer(this._caller)
 
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
@@ -69,7 +69,7 @@ class SabethaTimer {
   _canonsPhase() {
     this._timer = new SimpleTimer({minutes: 9, seconds: 2})
 
-    const announce = SabethaTimer._makeCanonAnnouncer()
+    const announce = SabethaTimer._makeCanonAnnouncer(this._caller)
 
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
@@ -88,7 +88,7 @@ class SabethaTimer {
 
     return promise
   }
-  static _makeCanonAnnouncer() {
+  static _makeCanonAnnouncer(caller) {
     let canon = 0
     let warnAt = Canons.start.seconds + 10
     let throwAt = Canons.start.seconds
@@ -96,24 +96,24 @@ class SabethaTimer {
       console.log(`${minutes}:${seconds}`)
       //announce canons
       if (seconds == warnAt) {
-        console.log('warn ' + Canons.alias[Canons.order[canon]].direction)
+        caller.call('warn ' + Canons.alias[Canons.order[canon]].direction)
         warnAt = (warnAt + 30) % 60
       }
       if (seconds == throwAt) {
-        console.log('throw ' + Canons.alias[Canons.order[canon]].direction)
+        caller.call('throw ' + Canons.alias[Canons.order[canon]].direction)
         throwAt = (throwAt + 30) % 60
         canon = (canon + 1) % Canons.order.length
       }
     }
   }
-  static _makeCountAnnouncer() {
+  static _makeCountAnnouncer(caller) {
     return ({seconds}) => {
       if (seconds == 0) {
         //announce go
-        console.log('go')
+        caller.call('go')
       } else {
         //announce seconds
-        console.log(String(seconds))
+        caller.call(String(seconds))
       }
     }
   }
