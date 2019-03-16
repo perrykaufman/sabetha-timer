@@ -50,6 +50,11 @@ class SabethaTimer {
     
     const announce = SabethaTimer._makeCountAnnouncer(this._caller)
 
+    this._timer.on('start', (time) => {
+      this._dispatch('start-countdown', time)
+      announce(time)
+    })
+    
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
       announce(time)
@@ -62,7 +67,6 @@ class SabethaTimer {
       })
     })
 
-    this._dispatch('start-countdown')
     this._timer.start()
     return promise
   }
@@ -71,6 +75,10 @@ class SabethaTimer {
 
     const announce = SabethaTimer._makeCanonAnnouncer(this._caller)
 
+    this._timer.on('start', (time) => {
+      this._dispatch('start-canons', time)
+    })
+    
     this._timer.on('tick', (time) => {
       this._dispatch('tick', time)
       announce(time)
@@ -83,7 +91,6 @@ class SabethaTimer {
       })
     })
 
-    this._dispatch('start-canons')
     this._timer.start()
 
     return promise
