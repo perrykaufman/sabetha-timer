@@ -79,7 +79,9 @@ class SimpleTimer {
     this._dispatch('tick', {minutes, seconds})
 
     if (minutes == 0 && seconds == 0) {
-      this.stop()
+      this._dispatch('finish', {minutes, seconds})
+      clearInterval(this._interval)
+      this._interval = null
     }
   }
 }
