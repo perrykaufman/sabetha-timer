@@ -1,5 +1,4 @@
 import EventMixin from '@lib/event-mixin.js'
-import {isStringArray} from '@lib/util.js'
 import SimpleTimer from '@lib/simple-timer.js'
 
 const Canons = new Object(null)
@@ -39,8 +38,15 @@ class SabethaTimer {
     if (typeof countdown != 'boolean') {
       countdown = true
     }
-    if (canons != 'symbol' && canons != 'direction' && !isStringArray(canons)) {
-      canons = 'symbol'
+    if (
+      canons != 'symbol' &&
+      canons != 'direction' &&
+      !(
+        canon instanceof Array &&
+        canon.every(el => typeof el == 'string') &&
+        canon.length == 4)
+    ) {
+      canons = 'symbol';
     }
     
     this._config = {countdown, canons}
