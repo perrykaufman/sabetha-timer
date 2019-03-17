@@ -24,7 +24,7 @@ class SimpleTimer {
     if (!this.isActive) return
     clearInterval(this._interval)
     this._interval = null
-    this._dispatch('stop')
+    this._dispatch('stop', {minutes: this.minutes, seconds: this.seconds})
   }
   get isActive() {
     if (this._interval) return true
