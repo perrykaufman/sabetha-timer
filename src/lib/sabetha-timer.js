@@ -151,8 +151,7 @@ class SabethaTimer {
     let canon = 0
     let warnAt = Canons.start.seconds + 10
     let throwAt = Canons.start.seconds
-    return ({minutes, seconds}) => {
-      console.log(`${minutes}:${seconds}`)
+    return ({seconds}) => {
       //announce canon warning
       if (seconds == warnAt) {
         caller.call(`${Canons.alias[Canons.order[canon]].direction} soon`)
