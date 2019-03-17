@@ -50,7 +50,7 @@ class SabethaTimer {
    * Stop and reset the timer
    */
   reset() {
-    if (!this._timer)
+    if (!this._timer) return
     this._timer.stop()
     this._timer = null
   }
