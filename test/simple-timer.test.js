@@ -154,12 +154,12 @@ describe('simple-timer', function() {
       expect(tickTime.seconds).toBe(seconds - ticks)
     })
     
-    it('dispatchs \'stop\' event when time reachs 0:00', function() {
-      let stopped = false
-      timer.on('stop', () => stopped = true)
+    it('dispatchs \'finish\' event when time reachs 0:00', function() {
+      let finished = false
+      timer.on('finish', () => finished = true)
       timer.start()
       jasmine.clock().tick(91 * INTERVAL + 1)
-      expect(stopped).toBe(true)
+      expect(finished).toBe(true)
     })
 
     it('dispatchs \'stop\' event when stopped', function() {
