@@ -31,13 +31,17 @@ class SabethaTimer {
     if(this._timer) return
     this._configure(options)
 
+    let active = true
+    
     //start countdown unless disabled
     if (this._config.countdown) {
-      await this._countdownPhase()
+      active = await this._countdownPhase()
     }
     
     //start canon callouts
-    await this._canonsPhase()
+    if (active) {
+      await this._canonsPhase()
+    }
 
     //remove timer
     this._timer = null
@@ -46,7 +50,9 @@ class SabethaTimer {
    * Stop and reset the timer
    */
   reset() {
+    if (!this._timer)
     this._timer.stop()
+    this._timer = null
   }
   /*
    * Validate and set the configuration
@@ -81,7 +87,7 @@ class SabethaTimer {
     const announce = SabethaTimer._makeCountAnnouncer(this._caller)
 
     this._timer.on('start', (time) => {
-      this._dispatch('start-countdown', time)
+      this._dispatch('countdown-start', time)
       announce(time)
     })
     
@@ -91,9 +97,12 @@ class SabethaTimer {
     })
 
     const promise = new Promise(resolve => {
+      this._timer.on('finish', () => {
+        this._dispatch('countdown-finish')
+        resolve(true)
+      })
       this._timer.on('stop', () => {
-        this._dispatch('end-countdown')
-        resolve()
+        resolve(false)
       })
     })
 
@@ -110,7 +119,7 @@ class SabethaTimer {
     const announce = SabethaTimer._makeCanonAnnouncer(this._caller)
 
     this._timer.on('start', (time) => {
-      this._dispatch('start-canons', time)
+      this._dispatch('canons-start', time)
     })
     
     this._timer.on('tick', (time) => {
@@ -119,9 +128,13 @@ class SabethaTimer {
     })
 
     const promise = new Promise(resolve => {
+      this._timer.on('finish', () => {
+        this._dispatch('canons-finish')
+        resolve(true)
+      })      
       this._timer.on('stop', () => {
-        this._dispatch('end-canons')
-        resolve()
+        this._dispatch('reset')
+        resolve(false)
       })
     })
 
