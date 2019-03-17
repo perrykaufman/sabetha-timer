@@ -71,9 +71,15 @@ describe('sabetha-timer', function() {
     const countdown = false
     sabtimer.start({countdown})
     jasmine.clock().tick((9 * 60 + BUFFER) * INTERVAL + 1)
-    for (let i = 0; i < history.length-1; i += 2) {
-      expect(history[i]).toBe(warn(canons[i / 2 % 8]))
-      expect(history[i+1]).toBe(spawn(canons[i / 2 % 8]))
-    }
+    history.forEach((callout, index) => {
+      //next canon in rotation
+      const canon = canons[Math.floor(index / 2 % 8)]
+      
+      //advance warning expected for even callouts
+      if (index % 2 == 0) expect(callout).toBe(warn(canon))
+      
+      //canon spawn expected  for odd callouts
+      else expect(callout).toBe(spawn(canon))
+    })
   })
 })
