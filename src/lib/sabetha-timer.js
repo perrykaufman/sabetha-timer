@@ -68,9 +68,9 @@ class SabethaTimer {
       canons != 'symbol' &&
       canons != 'direction' &&
       !(
-        canon instanceof Array &&
-        canon.every(el => typeof el == 'string') &&
-        canon.length == 4)
+        canons instanceof Array &&
+        canons.every(el => typeof el == 'string') &&
+        canons.length == 4)
     ) {
       canons = 'symbol';
     }
