@@ -82,4 +82,24 @@ describe('sabetha-timer', function() {
       else expect(callout).toBe(spawn(canon))
     })
   })
+
+  xit('dispatches \'start\' event when started', function() {
+
+  })
+
+  xit('dispatches \'reset\' event when reset', function() {
+
+  })
+
+  xit('dispatches \'finish\' event when finished', function() {
+
+  })
+
+  xit('dispatches \'update\' event for each time change during countdown', function() {
+
+  })
+
+  xit('dispatches \'update\' event for each time change during canon callouts', function() {
+
+  })
 })
