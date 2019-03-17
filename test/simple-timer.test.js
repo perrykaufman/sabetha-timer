@@ -177,6 +177,15 @@ describe('simple-timer', function() {
       timer.reset()
       expect(reset).toBe(true)
     })
+
+    it('dispatchs \'stop\' event with {minutes, seconds} parameter', function() {
+      let stopTime
+      timer.on('stop', (time) => stopTime = time)
+      timer.start()
+      timer.stop()
+      expect(stopTime.minutes).toBe(minutes)
+      expect(stopTime.seconds).toBe(seconds)
+    })
   })
 
   describe('timer ticks', function() {
