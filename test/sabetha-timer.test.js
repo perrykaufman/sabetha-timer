@@ -46,22 +46,24 @@ describe('sabetha-timer', function() {
     expect(history).toEqual([])
   })
 
-  it('can be reset during countdown', function() {
-    sabtimer.start()
+  it('can be reset during countdown', async function() {
+    const promise = sabtimer.start()
     jasmine.clock().tick(3 * INTERVAL + 1)
     sabtimer.reset()
+    await promise
     jasmine.clock().tick(90 * INTERVAL + 1)
     expect(sabtimer._timer).toBeFalsy()
     expect(history).toEqual(['5', '4', '3', '2'])
 
   })
 
-  it('can be reset during canon callouts', function() {
+  it('can be reset during canon callouts', async function() {
     const countdown = false
-    sabtimer.start({countdown})
+    const promise = sabtimer.start({countdown})
     jasmine.clock().tick(60 * INTERVAL + 1)
     sabtimer.reset()
     jasmine.clock().tick(90 * INTERVAL + 1)
+    await promise
     expect(sabtimer._timer).toBeFalsy()
     expect(history).toEqual([warn('South'), spawn('South'), warn('West')])
   })
@@ -83,23 +85,53 @@ describe('sabetha-timer', function() {
     })
   })
 
-  xit('dispatches \'start\' event when started', function() {
-
+  it('dispatches \'start\' event when started', function() {
+    let started = false
+    sabtimer.on('start', () => started = true)
+    sabtimer.start()
+    expect(started).toBe(true)
   })
 
-  xit('dispatches \'reset\' event when reset', function() {
-
+  it('dispatches \'reset\' event when reset', async function() {
+    let reset = false
+    sabtimer.on('reset', () => reset = true)
+    const promise = sabtimer.start({countdown: false})
+    jasmine.clock().tick(30 * INTERVAL + 1)
+    expect(reset).toBe(false)
+    sabtimer.reset()
+    await promise
+    expect(reset).toBe(true)
   })
 
-  xit('dispatches \'finish\' event when finished', function() {
-
+  it('dispatches \'finish\' event when finished', async function() {
+    const countdown = false
+    let finished = false
+    sabtimer.on('finish', () => finished = true)
+    const promise = sabtimer.start({countdown})
+    
+    expect(finished).toBe(false)
+    jasmine.clock().tick((9 * 60 + BUFFER - 1) * INTERVAL + 1)
+    expect(finished).toBe(false)
+    jasmine.clock().tick(1 * INTERVAL)
+    //wait for start function to finish
+    await promise
+    expect(finished).toBe(true)
   })
 
-  xit('dispatches \'update\' event for each time change during countdown', function() {
-
+  it('dispatches \'update\' event with {minutes, seconds} for each time change during countdown', function() {
+    const times = []
+    sabtimer.on('update', (time) => times.push(time))
+    sabtimer.start()
+    jasmine.clock().tick(5 * INTERVAL + 1)
+    expect(times[0]).toEqual({minutes: 0, seconds: 5})
+    expect(times[1]).toEqual({minutes: 0, seconds: 4})
+    expect(times[2]).toEqual({minutes: 0, seconds: 3})
+    expect(times[3]).toEqual({minutes: 0, seconds: 2})
+    expect(times[4]).toEqual({minutes: 0, seconds: 1})
+    expect(times[5]).toEqual({minutes: 0, seconds: 0})
   })
 
-  xit('dispatches \'update\' event for each time change during canon callouts', function() {
+  xit('dispatches \'update\' event with {minutes, seconds} for each time change during canon callouts', function() {
 
   })
 })
