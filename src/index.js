@@ -5,4 +5,9 @@ import style from '@styles/index.styl'
 const caller = new SpeechSynthesisAdapter()
 const timer = new SabethaTimer(caller)
 
+timer.on('update', (time) => {
+  console.clear()
+  console.table(time)
+})
+
 timer.start()
