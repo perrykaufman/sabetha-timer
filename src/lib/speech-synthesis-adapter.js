@@ -11,6 +11,7 @@ class SpeechSynthesisAdapter {
   call(text) {
     const utterance = new SpeechSynthesisUtterance(text)
     if (this._voice) utterance.voice = this._voice
+    utterance.rate = 1.25
     speechSynthesis.speak(utterance)
   }
   getVoices() {
