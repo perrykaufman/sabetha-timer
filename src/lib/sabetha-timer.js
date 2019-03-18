@@ -32,7 +32,7 @@ class SabethaTimer {
     this._configure(options)
 
     this._dispatch('start')
-
+    
     let active = true
     
     //start countdown unless disabled
@@ -57,7 +57,6 @@ class SabethaTimer {
   reset() {
     if (!this._timer) return
     this._timer.stop()
-    this._timer = null
   }
   /*
    * Validate and set the configuration
@@ -136,7 +135,6 @@ class SabethaTimer {
         resolve(true)
       })      
       this._timer.on('stop', () => {
-        this._dispatch('reset')
         resolve(false)
       })
     })
