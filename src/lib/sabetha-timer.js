@@ -35,38 +35,11 @@ class SabethaTimer {
 
     this._dispatch('start')
     
-    const announceCountdown = SabethaTimer._makeCountdownAnnouncer(this._caller)
-    const announceCanons = SabethaTimer._makeCanonAnnouncer(this._caller)
+    const announce = this._makeAnnouncer()
 
-    this._interval = setInterval(() => {
-      let countdown = {done: true}
-      let canons = {done: false}
-      let seconds
-      
-      if (this._config.countdown) {
-        countdown = announceCountdown()
-      }
-      
-      if (countdown.done) {
-        canons = announceCanons()
-        seconds = canons.seconds
-      } else {
-        seconds = countdown.seconds
-      }
+    announce()
 
-      const time = {
-        minutes: Math.floor(seconds / 60),
-        seconds: seconds % 60
-      }
-      console.table(time)
-      this._dispatch('update', time)
-
-      if (canons.done) {
-        clearInterval(this._interval)
-        this._interval = null
-        this._dispatch('finished')
-      }
-    }, INTERVAL)
+    this._interval = setInterval(() => announce(), INTERVAL)
   }
   /*
    * Stop and reset the timer
@@ -100,12 +73,46 @@ class SabethaTimer {
     
     this._config = {countdown, canons}
   }
+  _makeAnnouncer() {
+    const announceCountdown = this._makeCountdownAnnouncer()
+    const announceCanons = this._makeCanonAnnouncer()
+
+    return () => {
+      let countdown = {done: true}
+      let canons = {done: false}
+      let seconds
+      
+      if (this._config.countdown) {
+        countdown = announceCountdown()
+      }
+      
+      if (countdown.done) {
+        canons = announceCanons()
+        seconds = canons.seconds
+      } else {
+        seconds = countdown.seconds
+      }
+
+      const time = {
+        minutes: Math.floor(seconds / 60),
+        seconds: seconds % 60
+      }
+      
+      this._dispatch('update', time)
+
+      if (canons.done) {
+        clearInterval(this._interval)
+        this._interval = null
+        this._dispatch('finish')
+      }
+    }
+  }
   /*
    * Create a function to announce canons
    * @param caller - the caller used for voice synthesis
    * @return - function that announces canons
    */
-  static _makeCanonAnnouncer(caller) {
+  _makeCanonAnnouncer() {
     let canon = 0
     let seconds = 542 //9 minutes, 2 seconds
     return () => {
@@ -113,11 +120,11 @@ class SabethaTimer {
 
       //announce canon warning 
       if (seconds <= 515 && (seconds - 5) % 30 == 0) {
-        caller.call(`${Canons.alias[Canons.order[canon]].direction} soon`)
+        this._caller.call(`${Canons.alias[Canons.order[canon]].direction} soon`)
       }
       //announce canon spawn
       if (seconds <= 515 && (seconds + 5) % 30 == 0) {
-        caller.call(`throw ${Canons.alias[Canons.order[canon]].direction}`)
+        this._caller.call(`throw ${Canons.alias[Canons.order[canon]].direction}`)
         canon = (canon + 1) % Canons.order.length //set to next index
       }
 
@@ -129,17 +136,18 @@ class SabethaTimer {
    * @param caller - the caller used for voice synthesis
    * @return - function that announces countdown
    */
-  static _makeCountdownAnnouncer(caller) {
+  _makeCountdownAnnouncer() {
     let seconds = 5
     return () => {
       if (seconds < 0) return {done: true}
       
       if (seconds == 0) {
-        caller.call('go')
+        this._caller.call('go')
+        return {seconds: seconds--, done: true}
       }
 
       if (seconds > 0) {
-        caller.call(String(seconds))
+        this._caller.call(String(seconds))
       }
 
       return {seconds: seconds--, done: false}
