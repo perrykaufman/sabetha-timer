@@ -1,5 +1,4 @@
 import EventMixin from '@lib/event-mixin.js'
-import SimpleTimer from '@lib/simple-timer.js'
 
 //information used to calculate and name canon spawns
 const Canons = new Object(null)
