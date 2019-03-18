@@ -78,29 +78,18 @@ class SabethaTimer {
     const announceCanons = this._makeCanonAnnouncer()
 
     return () => {
-      let countdown = {done: true}
-      let canons = {done: false}
-      let seconds
+      let countdownDone = true
+      let canonsDone = false
       
       if (this._config.countdown) {
-        countdown = announceCountdown()
+        countdownDone = announceCountdown()
       }
       
-      if (countdown.done) {
-        canons = announceCanons()
-        seconds = canons.seconds
-      } else {
-        seconds = countdown.seconds
+      if (countdownDone) {
+        canonsDone = announceCanons()
       }
 
-      const time = {
-        minutes: Math.floor(seconds / 60),
-        seconds: seconds % 60
-      }
-      
-      this._dispatch('update', time)
-
-      if (canons.done) {
+      if (canonsDone) {
         clearInterval(this._interval)
         this._interval = null
         this._dispatch('finish')
@@ -116,7 +105,7 @@ class SabethaTimer {
     let canon = 0
     let seconds = 542 //9 minutes, 2 seconds
     return () => {
-      if (seconds < 0) return {done: true}
+      if (seconds < 0) return true
 
       //announce canon warning 
       if (seconds <= 515 && (seconds - 5) % 30 == 0) {
@@ -128,7 +117,13 @@ class SabethaTimer {
         canon = (canon + 1) % Canons.order.length //set to next index
       }
 
-      return {seconds: seconds--, done: false}
+      this._dispatch('update', {
+        minutes: Math.floor(seconds / 60),
+        seconds: seconds % 60
+      })
+
+      seconds--
+      return false
     }
   }
   /*
@@ -139,18 +134,23 @@ class SabethaTimer {
   _makeCountdownAnnouncer() {
     let seconds = 5
     return () => {
-      if (seconds < 0) return {done: true}
+      if (seconds < 0) return true
       
       if (seconds == 0) {
         this._caller.call('go')
-        return {seconds: seconds--, done: true}
       }
 
       if (seconds > 0) {
         this._caller.call(String(seconds))
       }
 
-      return {seconds: seconds--, done: false}
+      this._dispatch('update', {
+        minutes: Math.floor(seconds / 60),
+        seconds: seconds % 60
+      })
+
+      seconds--
+      return false
     }
   }
 }
