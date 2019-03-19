@@ -15,6 +15,9 @@ const spawn = (canon) => `throw ${canon}`
 
 const INTERVAL = 1000
 const BUFFER = 2
+const COUNTDOWN = 6
+const ENCOUNTER = 9 * 60
+const FIRST_CANON = 35
 
 describe('sabetha-timer', function() {
   let history
@@ -35,15 +38,22 @@ describe('sabetha-timer', function() {
   
   it('starts with a 5s countdown by default', function() {
     sabtimer.start()
-    jasmine.clock().tick(6 * INTERVAL + 1)
+    jasmine.clock().tick(COUNTDOWN * INTERVAL + 1)
     expect(history).toEqual(['5','4','3','2','1','go'])
   })
 
   it('can have 5s countdown disabled', function() {
     const countdown = false
     sabtimer.start({countdown})
-    jasmine.clock().tick(5 * INTERVAL + 1)
+    jasmine.clock().tick(COUNTDOWN * INTERVAL + 1)
     expect(history).toEqual([])
+  })
+
+  it('can have 5s countdown enabled', function() {
+    const countdown = true
+    sabtimer.start({countdown})
+    jasmine.clock().tick(COUNTDOWN * INTERVAL + 1)
+    expect(history).toEqual(['5','4','3','2','1','go'])
   })
 
   it('can be reset during countdown', function() {
@@ -51,7 +61,7 @@ describe('sabetha-timer', function() {
     jasmine.clock().tick(3 * INTERVAL + 1)
     sabtimer.reset()
     jasmine.clock().tick(90 * INTERVAL + 1)
-    expect(sabtimer._timer).toBeFalsy()
+    expect(sabtimer._interval).toBeFalsy()
     expect(history).toEqual(['5', '4', '3', '2'])
   })
 
@@ -61,7 +71,7 @@ describe('sabetha-timer', function() {
     jasmine.clock().tick(60 * INTERVAL + 1)
     sabtimer.reset()
     jasmine.clock().tick(90 * INTERVAL + 1)
-    expect(sabtimer._timer).toBeFalsy()
+    expect(sabtimer._interval).toBeFalsy()
     expect(history).toEqual([warn('South'), spawn('South'), warn('West')])
   })
 
@@ -69,7 +79,7 @@ describe('sabetha-timer', function() {
     const canons = ['South', 'West', 'North', 'East', 'South', 'North', 'West', 'East']
     const countdown = false
     sabtimer.start({countdown})
-    jasmine.clock().tick((9 * 60 + BUFFER) * INTERVAL + 1)
+    jasmine.clock().tick((ENCOUNTER + BUFFER) * INTERVAL + 1)
     history.forEach((callout, index) => {
       //next canon in rotation
       const canon = canons[Math.floor(index / 2 % 8)]
@@ -80,6 +90,12 @@ describe('sabetha-timer', function() {
       //canon spawn expected  for odd callouts
       else expect(callout).toBe(spawn(canon))
     })
+  })
+
+  it('will call out canons after countdown', function() {
+    sabtimer.start()
+    jasmine.clock().tick((COUNTDOWN + BUFFER + FIRST_CANON) * INTERVAL + 1)
+    expect(history).toEqual(['5','4','3','2','1','go',warn('South'),spawn('South')])
   })
 
   it('dispatches \'start\' event when started', function() {
@@ -106,7 +122,7 @@ describe('sabetha-timer', function() {
     sabtimer.start({countdown})
     
     expect(finished).toBe(false)
-    jasmine.clock().tick((9 * 60 + BUFFER) * INTERVAL + 1)
+    jasmine.clock().tick((ENCOUNTER + BUFFER) * INTERVAL + 1)
     expect(finished).toBe(false)
     jasmine.clock().tick(1 * INTERVAL)
     expect(finished).toBe(true)
@@ -116,7 +132,7 @@ describe('sabetha-timer', function() {
     const times = []
     sabtimer.on('update', (time) => times.push(time))
     sabtimer.start()
-    jasmine.clock().tick(6 * INTERVAL + 1)
+    jasmine.clock().tick(COUNTDOWN * INTERVAL + 1)
     expect(times[0]).toEqual({minutes: 0, seconds: 5})
     expect(times[1]).toEqual({minutes: 0, seconds: 4})
     expect(times[2]).toEqual({minutes: 0, seconds: 3})
