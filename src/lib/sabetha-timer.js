@@ -8,6 +8,10 @@ const CANONS = [
   { direction: "North", symbol: "Heart" },
   { direction: "East", symbol: "Square" }
 ];
+const DEFAULT_CONFIG = {
+  countdown: true,
+  canons: "direction"
+};
 
 const INTERVAL = 1000;
 
@@ -55,25 +59,28 @@ class SabethaTimer {
    */
   _configure({ countdown, canons } = {}) {
     // validate countdown
-    if (typeof countdown !== "boolean") {
-      this._config.countdown = true;
-    } else {
-      this._config.countdown = countdown;
-    }
+    this._config.countdown =
+      typeof countdown !== "boolean"
+        ? SabethaTimer.DEFAULT_CONFIG.countdown
+        : countdown;
+
     // validate canon names
-    if (
-      canons !== "symbol" &&
-      canons !== "direction" &&
+    this._config.canons =
+      !(canons in SabethaTimer.CANONS[0]) &&
       !(
         canons instanceof Array &&
         canons.every(el => typeof el === "string") &&
         canons.length === 4
       )
-    ) {
-      this._config.canons = "direction";
-    } else {
-      this._config.canons = canons;
-    }
+        ? SabethaTimer.DEFAULT_CONFIG.canons
+        : canons;
+  }
+
+  _tick(seconds) {
+    this._dispatch("update", {
+      minutes: Math.floor(seconds / 60),
+      seconds: seconds % 60
+    });
   }
 
   _getCanonName(index) {
@@ -131,10 +138,7 @@ class SabethaTimer {
         index = (index + 1) % SabethaTimer.ORDER.length; // set to next index
       }
 
-      this._dispatch("update", {
-        minutes: Math.floor(seconds / 60),
-        seconds: seconds % 60
-      });
+      this._tick(seconds);
 
       seconds -= 1;
       return false;
@@ -159,10 +163,7 @@ class SabethaTimer {
         this._caller.call(String(seconds));
       }
 
-      this._dispatch("update", {
-        minutes: Math.floor(seconds / 60),
-        seconds: seconds % 60
-      });
+      this._tick(seconds);
 
       seconds -= 1;
       return false;
@@ -172,6 +173,7 @@ class SabethaTimer {
 
 SabethaTimer.CANONS = CANONS;
 SabethaTimer.ORDER = ORDER;
+SabethaTimer.DEFAULT_CONFIG = DEFAULT_CONFIG;
 
 // add event mixin
 Object.assign(SabethaTimer.prototype, EventMixin);
