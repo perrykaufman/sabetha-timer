@@ -153,15 +153,31 @@ describe("sabetha-timer", () => {
 
   it("dispatches 'update' event with {minutes, seconds} for each time change during countdown", () => {
     const times = [];
-    sabtimer.on("update", time => times.push(time));
+    sabtimer.on("update", time => {
+      times.push(time);
+    });
     sabtimer.start();
     jasmine.clock().tick(COUNTDOWN * INTERVAL + 1);
-    expect(times[0]).toEqual({ minutes: 0, seconds: 5 });
-    expect(times[1]).toEqual({ minutes: 0, seconds: 4 });
-    expect(times[2]).toEqual({ minutes: 0, seconds: 3 });
-    expect(times[3]).toEqual({ minutes: 0, seconds: 2 });
-    expect(times[4]).toEqual({ minutes: 0, seconds: 1 });
+
+    for (let i = 0; i < COUNTDOWN; i += 1) {
+      expect(times[i]).toEqual({ minutes: 0, seconds: 5 - i });
+    }
   });
 
-  xit("dispatches 'update' event with {minutes, seconds} for each time change during canon callouts", () => {});
+  it("dispatches 'update' event with {minutes, seconds} for each time change during canon callouts", () => {
+    const countdown = false;
+    const times = [];
+    sabtimer.on("update", time => {
+      times.push(time);
+    });
+    sabtimer.start({ countdown });
+    jasmine.clock().tick(60 * INTERVAL + 1);
+
+    for (let i = 0; i < 60; i += 1) {
+      expect(times[i]).toEqual({
+        minutes: Math.floor((ENCOUNTER + BUFFER - i) / 60),
+        seconds: (ENCOUNTER + BUFFER - i) % 60
+      });
+    }
+  });
 });
