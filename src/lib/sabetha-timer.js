@@ -129,11 +129,11 @@ class SabethaTimer {
       if (seconds < 0) return true;
 
       // announce canon warning
-      if (seconds <= 515 && (seconds - 5) % 30 == 0) {
+      if (seconds <= 515 && (seconds - 5) % 30 === 0) {
         this._caller.call(`${this._getCanonName(index)} soon`);
       }
       // announce canon spawn
-      if (seconds <= 515 && (seconds + 5) % 30 == 0) {
+      if (seconds <= 515 && (seconds + 5) % 30 === 0) {
         this._caller.call(`throw ${this._getCanonName(index)}`);
         index = (index + 1) % SabethaTimer.ORDER.length; // set to next index
       }
