@@ -33,7 +33,5 @@
   },
   "author": "Perry Kaufman",
   "license": "MIT",
-  "dependencies": {
-    "@babel/polyfill": "^7.2.5"
-  }
+  "dependencies": {}
 }
