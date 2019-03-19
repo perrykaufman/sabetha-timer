@@ -1,11 +1,8 @@
 import EventMixin from '@lib/event-mixin.js'
 
 //information used to calculate and name canon spawns
-const Canons = new Object(null)
-Canons.start = {minutes: 8, seconds: 25 }
-Canons.interval = 30
-Canons.order = [0, 1, 2, 3, 0, 2, 1, 3]
-Canons.alias = [
+const ORDER = [0, 1, 2, 3, 0, 2, 1, 3]
+const CANONS = [
   {direction: 'South', symbol: 'Arrow'},
   {direction: 'West', symbol: 'Circle'},
   {direction: 'North', symbol: 'Heart'},
@@ -67,10 +64,17 @@ class SabethaTimer {
         canons.every(el => typeof el == 'string') &&
         canons.length == 4)
     ) {
-      canons = 'symbol';
+      canons = 'direction';
     }
     
     this._config = {countdown, canons}
+  }
+  _getCanonName(index) {
+    const config = this._config.canons
+    
+    const canon = SabethaTimer.ORDER[index]
+    
+    return config instanceof Array ? config[canon] : SabethaTimer.CANONS[canon][config]
   }
   _makeAnnouncer() {
     const announceCountdown = this._makeCountdownAnnouncer()
@@ -101,19 +105,19 @@ class SabethaTimer {
    * @return - function that announces canons
    */
   _makeCanonAnnouncer() {
-    let canon = 0
+    let index = 0
     let seconds = 542 //9 minutes, 2 seconds
     return () => {
       if (seconds < 0) return true
 
       //announce canon warning 
       if (seconds <= 515 && (seconds - 5) % 30 == 0) {
-        this._caller.call(`${Canons.alias[Canons.order[canon]].direction} soon`)
+        this._caller.call(`${this._getCanonName(index)} soon`)
       }
       //announce canon spawn
       if (seconds <= 515 && (seconds + 5) % 30 == 0) {
-        this._caller.call(`throw ${Canons.alias[Canons.order[canon]].direction}`)
-        canon = (canon + 1) % Canons.order.length //set to next index
+        this._caller.call(`throw ${this._getCanonName(index)}`)
+        index = (index + 1) % SabethaTimer.ORDER.length //set to next index
       }
 
       this._dispatch('update', {
@@ -153,6 +157,9 @@ class SabethaTimer {
     }
   }
 }
+
+SabethaTimer.CANONS = CANONS
+SabethaTimer.ORDER = ORDER
 
 //add event mixin
 Object.assign(SabethaTimer.prototype, EventMixin)
