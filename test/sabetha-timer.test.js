@@ -10,6 +10,18 @@ class MockCaller {
   }
 }
 
+// the order in which the canons appear
+const ORDER = [0, 1, 2, 3, 0, 2, 1, 3];
+
+// the names of the canons
+const CANONS = [
+  { direction: "South", symbol: "Arrow" },
+  { direction: "West", symbol: "Circle" },
+  { direction: "North", symbol: "Heart" },
+  { direction: "East", symbol: "Square" }
+];
+
+// the messages used to call out canons
 const warn = canon => `${canon} soon`;
 const spawn = canon => `throw ${canon}`;
 
@@ -56,6 +68,60 @@ describe("sabetha-timer", () => {
     expect(history).toEqual(["5", "4", "3", "2", "1", "go"]);
   });
 
+  it("refers to canons by direction by default", () => {
+    const directions = CANONS.map(el => el.direction);
+    const countdown = false;
+    sabtimer.start({ countdown });
+    jasmine.clock().tick((FIRST_CANON + BUFFER + 30 * 3) * INTERVAL + 1);
+
+    for (let i = 0; i < 4; i += 1) {
+      expect(history[i * 2]).toBe(warn(directions[i]));
+      expect(history[i * 2 + 1]).toBe(spawn(directions[i]));
+    }
+  });
+
+  it("can be set to refer to canons by direction", () => {
+    const directions = CANONS.map(el => el.direction);
+
+    const countdown = false;
+    const canons = "direction";
+    sabtimer.start({ countdown, canons });
+    jasmine.clock().tick((FIRST_CANON + BUFFER + 30 * 3) * INTERVAL + 1);
+
+    for (let i = 0; i < 4; i += 1) {
+      expect(history[i * 2]).toBe(warn(directions[i]));
+      expect(history[i * 2 + 1]).toBe(spawn(directions[i]));
+    }
+  });
+
+  it("can be set to refer to canons by symbol", () => {
+    const symbols = CANONS.map(el => el.symbol);
+
+    const countdown = false;
+    const canons = "symbol";
+    sabtimer.start({ countdown, canons });
+    jasmine.clock().tick((FIRST_CANON + BUFFER + 30 * 3) * INTERVAL + 1);
+
+    for (let i = 0; i < 4; i += 1) {
+      expect(history[i * 2]).toBe(warn(symbols[i]));
+      expect(history[i * 2 + 1]).toBe(spawn(symbols[i]));
+    }
+  });
+
+  it("can be set to refer to canons as custom names", () => {
+    const symbols = ["one", "two", "three", "four"];
+
+    const countdown = false;
+    const canons = symbols;
+    sabtimer.start({ countdown, canons });
+    jasmine.clock().tick((FIRST_CANON + BUFFER + 30 * 3) * INTERVAL + 1);
+
+    for (let i = 0; i < 4; i += 1) {
+      expect(history[i * 2]).toBe(warn(symbols[i]));
+      expect(history[i * 2 + 1]).toBe(spawn(symbols[i]));
+    }
+  });
+
   it("can be reset during countdown", () => {
     sabtimer.start();
     jasmine.clock().tick(3 * INTERVAL + 1);
@@ -76,16 +142,7 @@ describe("sabetha-timer", () => {
   });
 
   it("calls out all canons in the correct order", () => {
-    const canons = [
-      "South",
-      "West",
-      "North",
-      "East",
-      "South",
-      "North",
-      "West",
-      "East"
-    ];
+    const canons = ORDER.map(i => CANONS[i].direction);
     const countdown = false;
     sabtimer.start({ countdown });
     jasmine.clock().tick((ENCOUNTER + BUFFER) * INTERVAL + 1);
