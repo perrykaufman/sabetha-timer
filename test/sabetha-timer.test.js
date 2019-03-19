@@ -1,5 +1,3 @@
-/* eslint-env jasmine */
-
 import SabethaTimer from "@lib/sabetha-timer";
 
 class MockCaller {
