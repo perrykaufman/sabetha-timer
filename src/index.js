@@ -1,7 +1,7 @@
 import SabethaTimer from "@lib/sabetha-timer";
 import SpeechSynthesisAdapter from "@lib/speech-synthesis-adapter";
 
-import style from "@styles/index.styl";
+import milligram from "milligram/dist/milligram.css";
 
 const caller = new SpeechSynthesisAdapter();
 const sabtimer = new SabethaTimer(caller);
