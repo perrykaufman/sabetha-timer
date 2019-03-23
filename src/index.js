@@ -7,53 +7,98 @@ import main from "@styles/main.sass";
 const caller = new SpeechSynthesisAdapter();
 const sabtimer = new SabethaTimer(caller);
 
+// Containers
 const timer = document.querySelector(".sabtimer");
+const timeElement = timer.querySelector(".display>.time");
+const controls = timer.querySelector("form.controls");
 
-const displayTime = timer.querySelector(".display>.time");
+// Timer Buttons
+const startButton = controls.elements.main.elements.start;
+const resetButton = controls.elements.main.elements.reset;
 
-const startButton = timer.querySelector(".start");
-const resetButton = timer.querySelector(".reset");
+// Configuration Input
+const voiceSelect = controls.elements.config.elements.voice;
+const countdownSelect = controls.elements.config.elements.countdown;
+const canonSelect = controls.elements.config.elements.canons;
+const canonInputs = [];
+canonInputs.push(controls.elements.config.elements.canon1);
+canonInputs.push(controls.elements.config.elements.canon2);
+canonInputs.push(controls.elements.config.elements.canon3);
+canonInputs.push(controls.elements.config.elements.canon4);
 
-function formatTime({ minutes, seconds }) {
+function setTime({ minutes = 0, seconds = 0 } = {}) {
   const min = (minutes < 10 ? "0" : "") + String(minutes);
   const sec = (seconds < 10 ? "0" : "") + String(seconds);
 
-  return `${min}:${sec}`;
+  timeElement.innerText = `${min}:${sec}`;
 }
 
-function init() {
-  displayTime.innerText = formatTime({ minutes: 0, seconds: 0 });
-}
-
-resetButton.disabled = true;
-
-resetButton.addEventListener("click", event => {
-  sabtimer.reset();
-});
-
-startButton.addEventListener("click", event => {
-  sabtimer.start();
-});
-
-sabtimer.on("start", () => {
+function startTime() {
   startButton.disabled = true;
   resetButton.disabled = false;
-});
+}
 
-sabtimer.on("reset", () => {
-  displayTime.innerText = formatTime({ minutes: 0, seconds: 0 });
+function resetTime() {
+  setTime({ minutes: 0, seconds: 0 });
   startButton.disabled = false;
   resetButton.disabled = true;
-});
+}
 
-sabtimer.on("finish", () => {
-  displayTime.innerText = formatTime({ minutes: 0, seconds: 0 });
-  startButton.disabled = false;
-  resetButton.disabled = true;
-});
+function changeCanonNames(event) {
+  const option = !event ? "direction" : event.target.value;
 
-sabtimer.on("update", time => {
-  displayTime.innerText = formatTime(time);
-});
+  const isCustom = !(option in SabethaTimer.CANONS[0]);
 
-init();
+  const names = !isCustom
+    ? SabethaTimer.CANONS.map(el => el[option])
+    : ["", "", "", ""];
+
+  canonInputs.forEach((input, index) => {
+    input.disabled = !isCustom;
+    input.value = names[index];
+  });
+
+  if (isCustom) canonInputs[0].focus();
+}
+
+function getConfig() {
+  const voice = voiceSelect.value;
+  const countdown = countdownSelect.value === "countdown";
+  const canons =
+    canonSelect.value in SabethaTimer.CANONS[0]
+      ? canonSelect.value
+      : canonInputs.map(input => input.value);
+
+  return {
+    voice,
+    countdown,
+    canons
+  };
+}
+
+// Initialize
+(function initialize() {
+  resetTime();
+  changeCanonNames();
+
+  canonInputs.forEach(el => {
+    el.disabled = true;
+  });
+
+  resetButton.addEventListener("click", () => {
+    sabtimer.reset();
+  });
+
+  startButton.addEventListener("click", event => {
+    event.preventDefault();
+    const { voice, countdown, canons } = getConfig();
+    sabtimer.start({ countdown, canons });
+  });
+
+  canonSelect.addEventListener("change", changeCanonNames);
+
+  sabtimer.on("start", startTime);
+  sabtimer.on("reset", resetTime);
+  sabtimer.on("finish", resetTime);
+  sabtimer.on("update", setTime);
+})();
