@@ -44,6 +44,25 @@ function resetTime() {
   resetButton.disabled = true;
 }
 
+function populateVoices() {
+  // remove current voice options
+  while (voiceSelect.hasChildNodes()) {
+    voiceSelect.removeChild(voiceSelect.firstChild);
+  }
+
+  const voices = SpeechSynthesisAdapter.getVoices();
+
+  // add voice options
+  voices.forEach(voice => {
+    const option = document.createElement("option");
+    console.log(voice.name);
+    option.value = voice.name;
+    option.innerText = voice.name;
+
+    voiceSelect.appendChild(option);
+  });
+}
+
 function changeCanonNames(event) {
   const option = !event ? "direction" : event.target.value;
 
@@ -78,12 +97,15 @@ function getConfig() {
 
 // Initialize
 (function initialize() {
+  if (!window.speechSynthesis) {
+    // open modal
+    return;
+  }
+
   resetTime();
   changeCanonNames();
-
-  canonInputs.forEach(el => {
-    el.disabled = true;
-  });
+  populateVoices();
+  speechSynthesis.onvoiceschanged = populateVoices;
 
   resetButton.addEventListener("click", () => {
     sabtimer.reset();
@@ -92,6 +114,7 @@ function getConfig() {
   startButton.addEventListener("click", event => {
     event.preventDefault();
     const { voice, countdown, canons } = getConfig();
+    caller.setVoice(voice);
     sabtimer.start({ countdown, canons });
   });
 
