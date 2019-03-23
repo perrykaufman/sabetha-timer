@@ -9,7 +9,7 @@ const sabtimer = new SabethaTimer(caller);
 
 // Containers
 const timer = document.querySelector(".sabtimer");
-const timeElement = timer.querySelector(".display>.time");
+const timeElement = timer.querySelector(".sabtimer-display>.time");
 const controls = timer.querySelector("form.controls");
 
 // Timer Buttons
