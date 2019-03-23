@@ -8,6 +8,7 @@
   "rules": {
     "import/no-unresolved": "off",
     "no-underscore-dangle": "off",
+    "no-param-reassign": "warn",
     "prettier/prettier": "error"
   }
 }
