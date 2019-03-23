@@ -64,7 +64,9 @@ function populateVoices() {
 }
 
 function changeCanonNames(event) {
+  // select direction if called without event
   const option = !event ? "direction" : event.target.value;
+  if (!event) canonSelect[0].selected = true;
 
   const isCustom = !(option in SabethaTimer.CANONS[0]);
 
