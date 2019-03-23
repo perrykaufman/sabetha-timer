@@ -55,7 +55,7 @@ function populateVoices() {
   // add voice options
   voices.forEach(voice => {
     const option = document.createElement("option");
-    console.log(voice.name);
+
     option.value = voice.name;
     option.innerText = voice.name;
 
