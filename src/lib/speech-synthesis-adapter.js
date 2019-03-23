@@ -4,6 +4,8 @@
  * setVoice()
  */
 
+const EN = /^en-/i;
+
 class SpeechSynthesisAdapter {
   constructor() {
     this._voice = null;
@@ -20,7 +22,7 @@ class SpeechSynthesisAdapter {
     return speechSynthesis
       .getVoices()
       .filter(({ lang }) => {
-        return lang.toLowerCase() === "en-us";
+        return EN.test(lang);
       })
       .map(({ name }, index) => {
         return { name, index };
