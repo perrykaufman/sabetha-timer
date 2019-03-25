@@ -20,11 +20,12 @@ const resetButton = controls.elements.main.elements.reset;
 const voiceSelect = controls.elements.config.elements.voice;
 const countdownSelect = controls.elements.config.elements.countdown;
 const canonSelect = controls.elements.config.elements.canons;
-const canonInputs = [];
-canonInputs.push(controls.elements.config.elements.canon1);
-canonInputs.push(controls.elements.config.elements.canon2);
-canonInputs.push(controls.elements.config.elements.canon3);
-canonInputs.push(controls.elements.config.elements.canon4);
+const canonInputs = [
+  controls.elements.config.elements.canon1,
+  controls.elements.config.elements.canon2,
+  controls.elements.config.elements.canon3,
+  controls.elements.config.elements.canon4
+];
 
 function setTime({ minutes = 0, seconds = 0 } = {}) {
   const min = (minutes < 10 ? "0" : "") + String(minutes);
