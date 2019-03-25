@@ -1,6 +1,15 @@
+/* Colors */
+$sabetha-color: #744436
+  
+/* Button Colors */
+$start-color: #30bb35
+$reset-color: #ef4a39
+$disabled-color: #606c76
+  
 .sabtimer
   max-width: 400px
   h1
+    color: $sabetha-color
     text-align: center
 
 .sabtimer-display
@@ -13,6 +22,28 @@
   .button
     font-size: 2rem
     height: 4.5rem
+  .start
+    background-color: $start-color
+    border-color: $start-color
+    &:hover
+      background-color: lighten($start-color, 10%)
+      border-color: lighten($start-color, 10%)
+    &:disabled
+      background-color: mix($start-color, $disabled-color, 90%)
+      border-color: mix($start-color, $disabled-color, 90%)
+  .reset
+    background-color: $reset-color
+    border-color: $reset-color
+    &:hover
+      background-color: lighten($reset-color, 10%)
+      border-color: lighten($reset-color, 10%)
+    &:disabled
+      background-color: mix($reset-color, $disabled-color, 90%)
+      border-color: mix($reset-color, $disabled-color, 90%)
+
+.sabtimer-controls
+  input[type="text"]:focus, select:focus
+    border-color: $sabetha-color  
 
 .canon-names
   .column
