@@ -7,16 +7,16 @@ import main from "@styles/main.sass";
 const caller = new SpeechSynthesisAdapter();
 const sabtimer = new SabethaTimer(caller);
 
-// Containers
+// containers
 const timer = document.querySelector(".sabtimer");
 const timeElement = timer.querySelector(".sabtimer-display>.time");
 const controls = timer.querySelector(".sabtimer-controls");
 
-// Timer Buttons
+// timer buttons
 const startButton = controls.elements.main.elements.start;
 const resetButton = controls.elements.main.elements.reset;
 
-// Configuration Input
+// configuration input fields
 const voiceSelect = controls.elements.config.elements.voice;
 const countdownSelect = controls.elements.config.elements.countdown;
 const canonSelect = controls.elements.config.elements.canons;
@@ -27,6 +27,9 @@ const canonInputs = [
   controls.elements.config.elements.canon4
 ];
 
+/*
+ * sets the time on the timer display
+ */
 function setTime({ minutes = 0, seconds = 0 } = {}) {
   const min = (minutes < 10 ? "0" : "") + String(minutes);
   const sec = (seconds < 10 ? "0" : "") + String(seconds);
@@ -34,17 +37,26 @@ function setTime({ minutes = 0, seconds = 0 } = {}) {
   timeElement.innerText = `${min}:${sec}`;
 }
 
+/*
+ * updates which buttons are available after the timer starts
+ */
 function startTime() {
   startButton.disabled = true;
   resetButton.disabled = false;
 }
 
+/*
+ * resets the timer display and available buttons
+ */
 function resetTime() {
   setTime({ minutes: 0, seconds: 0 });
   startButton.disabled = false;
   resetButton.disabled = true;
 }
 
+/*
+ * adds voice options to the voice select element
+ */
 function populateVoices() {
   // remove current voice options
   while (voiceSelect.hasChildNodes()) {
@@ -64,8 +76,11 @@ function populateVoices() {
   });
 }
 
+/*
+ * changes which canon names are displayed based on the selected option. If called without an event, initializes the canon name select and name fields.
+ */
 function changeCanonNames(event) {
-  // select direction if called without event
+  // initialize option and names if no event
   const option = !event ? "direction" : event.target.value;
   if (!event) canonSelect[0].selected = true;
 
@@ -83,6 +98,9 @@ function changeCanonNames(event) {
   if (isCustom) canonInputs[0].focus();
 }
 
+/*
+ * gets the configuration options from the form
+ */
 function getConfig() {
   const voice = voiceSelect.value;
   const countdown = countdownSelect.value === "countdown";
@@ -98,7 +116,9 @@ function getConfig() {
   };
 }
 
-// Initialize
+/*
+ * Initializes the form and listeners
+ */
 (function initialize() {
   if (!window.speechSynthesis) {
     // open modal
@@ -108,7 +128,7 @@ function getConfig() {
   resetTime();
   changeCanonNames();
   populateVoices();
-  speechSynthesis.onvoiceschanged = populateVoices;
+  speechSynthesis.onvoiceschanged = populateVoices; // for chrome
 
   resetButton.addEventListener("click", () => {
     sabtimer.reset();
