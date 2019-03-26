@@ -56,10 +56,10 @@ const devConfig = {
 };
 
 module.exports = env => {
-  if (env.development) {
+  if (env && env.development) {
     Object.assign(config, devConfig);
   }
-  if (env.test) {
+  if (env && env.test) {
     delete config.entry;
     delete config.output;
   }
