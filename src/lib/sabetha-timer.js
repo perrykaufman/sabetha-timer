@@ -16,8 +16,14 @@ const DEFAULT_CONFIG = {
 const INTERVAL = 1000;
 
 /*
- * Creates an object used to make voice call outs for canon spawns in the Sabetha
+ * creates an object used to make voice call outs for canon spawns in the Sabetha
  * raid boss in Guild Wars 2
+ *
+ * @event start - dispatched when timer starts
+ * @event reset - dispatched when timer is reset
+ * @event finish - dispatched when timer finishs
+ * @event update - dispatched on time change and passes the current time
+ *        @passes { minutes, seconds }
  */
 class SabethaTimer {
   constructor(caller) {
@@ -27,7 +33,7 @@ class SabethaTimer {
   }
 
   /*
-   * Start the countdown timer
+   * start the countdown timer
    * @param options - timer configuration options
    */
   start(options) {
@@ -44,7 +50,7 @@ class SabethaTimer {
   }
 
   /*
-   * Stop and reset the timer
+   * stop and reset the timer
    */
   reset() {
     if (!this._interval) return;
@@ -53,8 +59,8 @@ class SabethaTimer {
     this._dispatch("reset");
   }
 
-  /*
-   * Validate and set the configuration
+  /* PRIVATE
+   * validate and set the configuration
    * @param options - timer configuration options
    */
   _configure({ countdown, canons } = {}) {
@@ -76,6 +82,10 @@ class SabethaTimer {
         : canons;
   }
 
+  /* PRIVATE
+   * dispatch an update for the current time
+   * @param seconds - the number of seconds left on the timer
+   */
   _tick(seconds) {
     this._dispatch("update", {
       minutes: Math.floor(seconds / 60),
@@ -83,6 +93,10 @@ class SabethaTimer {
     });
   }
 
+  /* PRIVATE
+   * gets the name of the canon corresponding to the given index
+   * @param index - the index of the canon
+   */
   _getCanonName(index) {
     const config = this._config.canons;
 
@@ -93,6 +107,9 @@ class SabethaTimer {
       : SabethaTimer.CANONS[canon][config];
   }
 
+  /* PRIVATE
+   * returns a function that tick the clock each time it is called and make announcements
+   */
   _makeAnnouncer() {
     const announceCountdown = this._makeCountdownAnnouncer();
     const announceCanons = this._makeCanonAnnouncer();
@@ -117,8 +134,8 @@ class SabethaTimer {
     };
   }
 
-  /*
-   * Create a function to announce canons
+  /* PRIVATE
+   * create a function to announce canons
    * @param caller - the caller used for voice synthesis
    * @return - function that announces canons
    */
@@ -145,7 +162,7 @@ class SabethaTimer {
     };
   }
 
-  /*
+  /* PRIVATE
    * Create a function to announce countdown
    * @param caller - the caller used for voice synthesis
    * @return - function that announces countdown
