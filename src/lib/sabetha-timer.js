@@ -132,7 +132,7 @@ class SabethaTimer {
     });
 
     // make call out
-    const callout = this.getCallout();
+    const callout = this._getCallout();
     if (callout) {
       this._caller.call(callout);
       this._dispatch("call", callout);
@@ -155,11 +155,11 @@ class SabethaTimer {
     }
   }
 
-  /*
+  /* PRIVATE
    * gets a callout based on the current time and mode
    * return - callout text, null if no callout
    */
-  getCallout() {
+  _getCallout() {
     const { mode, seconds } = this._state;
 
     let callout = null;
@@ -169,12 +169,12 @@ class SabethaTimer {
     }
 
     if (!callout && mode === "canons") {
-      const canon = this.isCanonWarning(seconds);
+      const canon = this._isCanonWarning(seconds);
       callout = canon ? SabethaTimer.CALLOUTS.warn(canon) : null;
     }
 
     if (!callout && mode === "canons") {
-      const canon = this.isCanonSpawn(seconds);
+      const canon = this._isCanonSpawn(seconds);
       callout = canon ? SabethaTimer.CALLOUTS.spawn(canon) : null;
     }
 
@@ -195,12 +195,12 @@ class SabethaTimer {
       : SabethaTimer.CANONS[canon][config];
   }
 
-  /*
+  /* PRIVATE
    * determines if a canon is spawning at the given time
    * @param seconds - the current time
    * @return - the name of the canon, null if none
    */
-  isCanonSpawn(seconds) {
+  _isCanonSpawn(seconds) {
     const start = SabethaTimer.TIMES.firstCanon;
     const rotation = SabethaTimer.ORDER.length;
 
@@ -209,12 +209,12 @@ class SabethaTimer {
       : null;
   }
 
-  /*
+  /* PRIVATE
    * determines if a canon will spawn soon (i.e. in 10 seconds)
    * @param seconds - the current time
    * @return - the name of the canon, null if none
    */
-  isCanonWarning(seconds) {
+  _isCanonWarning(seconds) {
     const start = SabethaTimer.TIMES.firstCanon;
     const rotation = SabethaTimer.ORDER.length;
 
