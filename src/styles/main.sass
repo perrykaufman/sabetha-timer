@@ -5,9 +5,28 @@ $sabetha-color: #744436
 $start-color: #30bb35
 $reset-color: #ef4a39
 $disabled-color: #606c76
-  
+
+.mask
+  background-color: rgba(0,0,0,.5)
+  height: 100%
+  left: 0
+  position: absolute
+  top: 0
+  width: 100%
+  z-index: 1
+
+.modal
+  background-color: white
+  padding: 1rem
+  left: 0
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+  width: 100%
+  z-index: 2
+
 .sabtimer
-  max-width: 40rem
+  max-width: 64rem
   min-width: 32rem
   h1
     color: $sabetha-color
@@ -58,6 +77,10 @@ $disabled-color: #606c76
     margin: 0 1rem 0 0
 
 @media (min-width: 40rem)
+  .modal
+    left: 50%
+    transform: translate(-50%,-50%)
+    width: 40rem
   .canon-names
     .column
       flex-direction: column
