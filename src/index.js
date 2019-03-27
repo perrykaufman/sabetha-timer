@@ -88,7 +88,7 @@ function changeCanonNames(event) {
 
   const names = !isCustom
     ? SabethaTimer.CANONS.map(el => el[option])
-    : ["", "", "", ""];
+    : Array(4).fill("");
 
   canonInputs.forEach((input, index) => {
     input.disabled = !isCustom;
