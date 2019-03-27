@@ -4,13 +4,14 @@ import SpeechSynthesisAdapter from "@lib/speech-synthesis-adapter";
 import milligram from "milligram/src/milligram.sass";
 import main from "@styles/main.sass";
 
-const caller = new SpeechSynthesisAdapter();
-const sabtimer = new SabethaTimer(caller);
-
 // containers
 const timer = document.querySelector(".sabtimer");
 const timeElement = timer.querySelector(".sabtimer-display>.time");
 const controls = timer.querySelector(".sabtimer-controls");
+
+// modal
+const modal = document.querySelector(".modal");
+const mask = document.querySelector(".mask");
 
 // timer buttons
 const startButton = controls.elements.main.elements.start;
@@ -26,6 +27,11 @@ const canonInputs = [
   controls.elements.config.elements.canon3,
   controls.elements.config.elements.canon4
 ];
+
+function openModal() {
+  modal.style.display = "block";
+  mask.style.display = "block";
+}
 
 /*
  * sets the time on the timer display
@@ -117,11 +123,14 @@ function getConfig() {
 }
 
 /*
- * Initializes the form and listeners
+ * initializes the form and listeners
  */
 (function initialize() {
+  const caller = new SpeechSynthesisAdapter();
+  const sabtimer = new SabethaTimer(caller);
   if (!window.speechSynthesis) {
     // open modal
+    openModal();
     return;
   }
 
