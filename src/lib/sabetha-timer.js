@@ -49,7 +49,9 @@ const SECOND = 1000;
  * @event reset - dispatched when timer is reset
  * @event finish - dispatched when timer finishs
  * @event update - dispatched on time change and passes the current time
- *        @passes { minutes, seconds }
+ *        @passes { minutes, seconds } - the current time
+ * @event call - dispatched when a callout is made
+ *        @passes text - the text of the callout
  */
 class SabethaTimer {
   constructor(caller) {
