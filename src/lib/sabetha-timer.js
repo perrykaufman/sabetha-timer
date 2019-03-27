@@ -1,19 +1,45 @@
 import EventMixin from "@lib/event-mixin";
 
-// information used to calculate and name canon spawns
+// order of the canon spawns
 const ORDER = [0, 1, 2, 3, 0, 2, 1, 3];
+
+// default names for the canons
 const CANONS = [
   { direction: "South", symbol: "Arrow" },
   { direction: "West", symbol: "Circle" },
   { direction: "North", symbol: "Heart" },
   { direction: "East", symbol: "Square" }
 ];
+
+// durations of timer modes, etc.
+const TIMES = {
+  countdown: 5,
+  fightEnd: 0,
+  fightStart: 542,
+  firstCanon: 515
+};
+
+// functions to create callout text
+const CALLOUTS = {
+  countdown(seconds) {
+    return seconds < 1 ? "go" : String(seconds);
+  },
+  spawn(canon) {
+    return `throw ${canon}`;
+  },
+  warn(canon) {
+    return `${canon} soon`;
+  }
+};
+
+// default configuration
 const DEFAULT_CONFIG = {
   countdown: true,
   canons: "direction"
 };
 
-const INTERVAL = 1000;
+// interval used by timer
+const SECOND = 1000;
 
 /*
  * creates an object used to make voice call outs for canon spawns in the Sabetha
@@ -29,7 +55,11 @@ class SabethaTimer {
   constructor(caller) {
     this._caller = caller;
     this._config = {};
-    this._interval = null;
+    this._state = {
+      interval: null,
+      mode: null,
+      seconds: 0
+    };
   }
 
   /*
@@ -37,25 +67,24 @@ class SabethaTimer {
    * @param options - timer configuration options
    */
   start(options) {
-    if (this._interval) return;
+    if (this._state.interval) return;
     this._configure(options);
 
     this._dispatch("start");
 
-    const announce = this._makeAnnouncer();
+    this._state.mode = "start";
 
-    announce();
-
-    this._interval = setInterval(() => announce(), INTERVAL);
+    this._tick();
+    this._state.interval = setInterval(() => this._tick(), SECOND);
   }
 
   /*
    * stop and reset the timer
    */
   reset() {
-    if (!this._interval) return;
-    clearInterval(this._interval);
-    this._interval = null;
+    if (!this._state.interval) return;
+    clearInterval(this._state.interval);
+    this._state.interval = null;
     this._dispatch("reset");
   }
 
@@ -83,14 +112,73 @@ class SabethaTimer {
   }
 
   /* PRIVATE
-   * dispatch an update for the current time
-   * @param seconds - the number of seconds left on the timer
+   * handle a tick of the timer, making a callout if required
    */
-  _tick(seconds) {
+  _tick() {
+    // initialize
+    if (this._state.mode === "start") {
+      this._state.seconds = this._config.countdown
+        ? SabethaTimer.TIMES.countdown + 1
+        : SabethaTimer.TIMES.fightStart + 1;
+      this._state.mode = this._config.countdown ? "countdown" : "canons";
+    }
+
+    // tick
+    this._state.seconds -= 1;
+    const { seconds } = this._state;
     this._dispatch("update", {
       minutes: Math.floor(seconds / 60),
       seconds: seconds % 60
     });
+
+    // make call out
+    const callout = this.getCallout();
+    if (callout) {
+      this._caller.call(callout);
+      this._dispatch("call", callout);
+    }
+
+    // countdown is finished
+    if (this._state.mode === "countdown" && seconds <= 0) {
+      this._state.mode = "canons";
+      this._state.seconds = SabethaTimer.TIMES.fightStart + 1;
+    }
+
+    // timer is finished
+    if (
+      this._state.mode === "canons" &&
+      this._state.seconds <= SabethaTimer.TIMES.fightEnd
+    ) {
+      clearInterval(this._state.interval);
+      this._state.interval = null;
+      this._dispatch("finish");
+    }
+  }
+
+  /*
+   * gets a callout based on the current time and mode
+   * return - callout text, null if no callout
+   */
+  getCallout() {
+    const { mode, seconds } = this._state;
+
+    let callout = null;
+
+    if (mode === "countdown") {
+      callout = SabethaTimer.CALLOUTS.countdown(seconds);
+    }
+
+    if (!callout && mode === "canons") {
+      const canon = this.isCanonWarning(seconds);
+      callout = canon ? SabethaTimer.CALLOUTS.warn(canon) : null;
+    }
+
+    if (!callout && mode === "canons") {
+      const canon = this.isCanonSpawn(seconds);
+      callout = canon ? SabethaTimer.CALLOUTS.spawn(canon) : null;
+    }
+
+    return callout;
   }
 
   /* PRIVATE
@@ -107,90 +195,40 @@ class SabethaTimer {
       : SabethaTimer.CANONS[canon][config];
   }
 
-  /* PRIVATE
-   * returns a function that tick the clock each time it is called and make announcements
+  /*
+   * determines if a canon is spawning at the given time
+   * @param seconds - the current time
+   * @return - the name of the canon, null if none
    */
-  _makeAnnouncer() {
-    const announceCountdown = this._makeCountdownAnnouncer();
-    const announceCanons = this._makeCanonAnnouncer();
+  isCanonSpawn(seconds) {
+    const start = SabethaTimer.TIMES.firstCanon;
+    const rotation = SabethaTimer.ORDER.length;
 
-    return () => {
-      let countdownDone = true;
-      let canonsDone = false;
-
-      if (this._config.countdown) {
-        countdownDone = announceCountdown();
-      }
-
-      if (countdownDone) {
-        canonsDone = announceCanons();
-      }
-
-      if (canonsDone) {
-        clearInterval(this._interval);
-        this._interval = null;
-        this._dispatch("finish");
-      }
-    };
+    return seconds <= start && (seconds + 5) % 30 === 0
+      ? this._getCanonName(((start - seconds - 10) / 30) % rotation)
+      : null;
   }
 
-  /* PRIVATE
-   * create a function to announce canons
-   * @param caller - the caller used for voice synthesis
-   * @return - function that announces canons
+  /*
+   * determines if a canon will spawn soon (i.e. in 10 seconds)
+   * @param seconds - the current time
+   * @return - the name of the canon, null if none
    */
-  _makeCanonAnnouncer() {
-    let index = 0;
-    let seconds = 542; // 9 minutes, 2 seconds
-    return () => {
-      if (seconds < 0) return true;
+  isCanonWarning(seconds) {
+    const start = SabethaTimer.TIMES.firstCanon;
+    const rotation = SabethaTimer.ORDER.length;
 
-      // announce canon warning
-      if (seconds <= 515 && (seconds - 5) % 30 === 0) {
-        this._caller.call(`${this._getCanonName(index)} soon`);
-      }
-      // announce canon spawn
-      if (seconds <= 515 && (seconds + 5) % 30 === 0) {
-        this._caller.call(`throw ${this._getCanonName(index)}`);
-        index = (index + 1) % SabethaTimer.ORDER.length; // set to next index
-      }
-
-      this._tick(seconds);
-
-      seconds -= 1;
-      return false;
-    };
-  }
-
-  /* PRIVATE
-   * Create a function to announce countdown
-   * @param caller - the caller used for voice synthesis
-   * @return - function that announces countdown
-   */
-  _makeCountdownAnnouncer() {
-    let seconds = 5;
-    return () => {
-      if (seconds < 0) return true;
-
-      if (seconds === 0) {
-        this._caller.call("go");
-      }
-
-      if (seconds > 0) {
-        this._caller.call(String(seconds));
-      }
-
-      this._tick(seconds);
-
-      seconds -= 1;
-      return false;
-    };
+    return seconds <= start && (seconds - 5) % 30 === 0
+      ? this._getCanonName(((start - seconds) / 30) % rotation)
+      : null;
   }
 }
 
 SabethaTimer.CANONS = CANONS;
 SabethaTimer.ORDER = ORDER;
 SabethaTimer.DEFAULT_CONFIG = DEFAULT_CONFIG;
+SabethaTimer.TIMES = TIMES;
+SabethaTimer.CALLOUTS = CALLOUTS;
 
 // add event mixin
 Object.assign(SabethaTimer.prototype, EventMixin);
