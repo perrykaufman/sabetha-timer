@@ -202,7 +202,7 @@ describe("sabetha-timer", () => {
     sabtimer.start({ countdown });
 
     expect(finished).toBe(false);
-    jasmine.clock().tick((ENCOUNTER + BUFFER) * INTERVAL + 1);
+    jasmine.clock().tick((ENCOUNTER + BUFFER - 1) * INTERVAL + 1);
     expect(finished).toBe(false);
     jasmine.clock().tick(1 * INTERVAL);
     expect(finished).toBe(true);
