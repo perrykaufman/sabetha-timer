@@ -9,10 +9,6 @@ const timer = document.querySelector(".sabtimer");
 const timeElement = timer.querySelector(".sabtimer-display>.time");
 const controls = timer.querySelector(".sabtimer-controls");
 
-// modal
-const modal = document.querySelector(".sabtimer-modal");
-const mask = document.querySelector(".sabtimer-mask");
-
 // timer buttons
 const startButton = controls.elements.main.elements.start;
 const resetButton = controls.elements.main.elements.reset;
