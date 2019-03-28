@@ -28,11 +28,6 @@ const canonInputs = [
   controls.elements.config.elements.canon4
 ];
 
-function removeModal() {
-  modal.style.display = "none";
-  mask.style.display = "none";
-}
-
 /*
  * sets the time on the timer display
  */
@@ -130,7 +125,7 @@ function getConfig() {
   const sabtimer = new SabethaTimer(caller);
   if (window.speechSynthesis) {
     // remove modal if browser is supported
-    removeModal();
+    document.body.classList.remove("unsupported");
   } else {
     return;
   }

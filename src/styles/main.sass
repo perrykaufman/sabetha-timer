@@ -8,6 +8,7 @@ $disabled-color: #606c76
 
 .sabtimer-mask
   background-color: rgba(0,0,0,.5)
+  display: none
   height: 100%
   left: 0
   position: absolute
@@ -17,6 +18,7 @@ $disabled-color: #606c76
 
 .sabtimer-modal
   background-color: white
+  display: none
   padding: 1rem
   left: 0
   position: absolute
@@ -24,6 +26,11 @@ $disabled-color: #606c76
   transform: translateY(-50%)
   width: 100%
   z-index: 2
+
+.unsupported
+  overflow: hidden
+  .sabtimer-mask, .sabtimer-modal
+    display: block
 
 .sabtimer
   max-width: 64rem
