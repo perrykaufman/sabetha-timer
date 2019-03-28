@@ -28,9 +28,9 @@ const canonInputs = [
   controls.elements.config.elements.canon4
 ];
 
-function openModal() {
-  modal.style.display = "block";
-  mask.style.display = "block";
+function removeModal() {
+  modal.style.display = "none";
+  mask.style.display = "none";
 }
 
 /*
@@ -129,8 +129,9 @@ function getConfig() {
   const caller = new SpeechSynthesisAdapter();
   const sabtimer = new SabethaTimer(caller);
   if (!window.speechSynthesis) {
-    // open modal
-    openModal();
+    // remove modal if browser is supported
+    removeModal();
+  } else {
     return;
   }
 
