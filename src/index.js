@@ -128,7 +128,7 @@ function getConfig() {
 (function initialize() {
   const caller = new SpeechSynthesisAdapter();
   const sabtimer = new SabethaTimer(caller);
-  if (!window.speechSynthesis) {
+  if (window.speechSynthesis) {
     // remove modal if browser is supported
     removeModal();
   } else {

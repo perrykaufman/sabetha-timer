@@ -1,12 +1,14 @@
 const EN = /^en-/i;
 
-/* caller api
+/* caller interface
  * call(string)
  * getVoices() returns array of voices {name, index}
  * setVoice()
+ * cancel()
  */
 class SpeechSynthesisAdapter {
   constructor() {
+    this.synth = window.speechSynthesis;
     this._voice = null;
   }
 
@@ -18,7 +20,14 @@ class SpeechSynthesisAdapter {
     const utterance = new SpeechSynthesisUtterance(text);
     if (this._voice) utterance.voice = this._voice;
     utterance.rate = 1.25;
-    speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /*
+   * cancel all ongoing and pending calls
+   */
+  cancel() {
+    window.speechSynthesis.cancel();
   }
 
   /*
@@ -26,7 +35,7 @@ class SpeechSynthesisAdapter {
    * @return - an array of voices with { name, index }
    */
   static getVoices() {
-    return speechSynthesis
+    return window.speechSynthesis
       .getVoices()
       .filter(({ lang }) => {
         return EN.test(lang);
@@ -41,7 +50,9 @@ class SpeechSynthesisAdapter {
    * @param name - the name of the voice to be used
    */
   setVoice(name) {
-    this._voice = speechSynthesis.getVoices().find(el => el.name === name);
+    this._voice = window.speechSynthesis
+      .getVoices()
+      .find(el => el.name === name);
   }
 }
 

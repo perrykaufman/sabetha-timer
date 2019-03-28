@@ -87,6 +87,7 @@ class SabethaTimer {
     if (!this._state.interval) return;
     clearInterval(this._state.interval);
     this._state.interval = null;
+    this._caller.cancel();
     this._dispatch("reset");
   }
 
