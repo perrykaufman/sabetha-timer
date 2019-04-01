@@ -83,6 +83,27 @@ $disabled-color: #606c76
   label
     margin: 0 1rem 0 0
 
+.github-link
+  align-items: center
+  display: flex
+  flex-flow: row nowrap
+  justify-content: center
+  margin: auto
+  padding: .5rem
+  width: 20rem
+
+  .github-icon
+    height: 4rem
+    width: 4rem
+
+  .github-text
+    color: $sabetha-color
+    margin: 0
+    padding: 0 0 0 2rem
+    transition: .2s all ease-in-out
+  &:hover .github-text
+    padding-left: 1rem
+
 @media (min-width: 40rem)
   .sabtimer-modal
     left: 50%

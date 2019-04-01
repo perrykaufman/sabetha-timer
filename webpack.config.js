@@ -1,10 +1,12 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 const config = {
   mode: "production",
-  entry: "./src/index.js",
+  context: path.resolve(__dirname, "src"),
+  entry: "./index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js"
@@ -12,7 +14,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /(\.scss|\.sass)$/,
+        test: /\.(scss|sass)$/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -36,10 +38,11 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
+      template: "index.html",
       inject: "body"
     }),
-    new MiniCssExtractPlugin({})
+    new MiniCssExtractPlugin({}),
+    new CopyWebpackPlugin([{ from: "images", to: "images" }])
   ],
   resolve: {
     alias: {
