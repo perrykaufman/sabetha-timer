@@ -8,6 +8,10 @@ class MockCaller {
   call(text) {
     this.history.push(text);
   }
+
+  cancel() {
+    // do nothing
+  }
 }
 
 // the order in which the canons appear
