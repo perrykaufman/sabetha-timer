@@ -1,6 +1,6 @@
 # Sabetha Timer
 
-This is a web application can be used to help defeat the [Sabetha](https://wiki.guildwars2.com/wiki/Sabetha_the_Saboteur) raid boss in Guild Wars 2. Every 30 seconds, canons that fire at the players appear to the north, east, south, or west of the boss platform in a predictable order. This timer uses text to speech to call out when the canons appear that players can leave at the correct time to destroy them.
+This is a web application that can be used to help defeat the [Sabetha](https://wiki.guildwars2.com/wiki/Sabetha_the_Saboteur) raid boss in [Guild Wars 2](https://en.wikipedia.org/wiki/Guild_Wars_2). Every 30 seconds, a canon that fires at the players will appear to the north, east, south, or west of the boss platform. This timer uses the browser text to speech api to call out when a canon appears so that players can leave at the correct time to destroy them.
 
 ## Guide
 ```
